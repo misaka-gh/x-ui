@@ -2,6 +2,8 @@
 
 支持多协议多用户的 xray 面板
 
+如对脚本不放心，可使用此沙箱先测一遍再使用：https://killercoda.com/playgrounds/scenario/ubuntu
+
 # 功能介绍
 
 - 系统状态监控
