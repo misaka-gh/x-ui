@@ -1,4 +1,4 @@
-name: Sync to Bitbucket and Gitlab1
+name: Sync to Bitbucket and Gitlab
 
 on: 
   push:
@@ -27,6 +27,6 @@ jobs:
       - uses: pixta-dev/repository-mirroring-action@v1
         with:
           target_repo_url:
-            git@gitlab.com:misaka-blog/x-ui.git
+            git@gitlab.com:misaka-blog/xui.git
           ssh_private_key:
             ${{ secrets.SSH_PRIVATEKEY }}
