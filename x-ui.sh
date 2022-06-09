@@ -392,19 +392,19 @@ ssl_cert_issue() {
 }
 
 open_ports(){
-    systemctl stop firewalld.service
-    systemctl disable firewalld.service
-    setenforce 0
-    ufw disable
-    iptables -P INPUT ACCEPT
-    iptables -P FORWARD ACCEPT
-    iptables -P OUTPUT ACCEPT
-    iptables -t nat -F
-    iptables -t mangle -F 
-    iptables -F
-    iptables -X
-    netfilter-persistent save
-    yellow "VPS中的所有网络端口已开启"
+    systemctl stop firewalld.service 2>/dev/null
+    systemctl disable firewalld.service 2>/dev/null
+    setenforce 0 2>/dev/null
+    ufw disable 2>/dev/null
+    iptables -P INPUT ACCEPT 2>/dev/null
+    iptables -P FORWARD ACCEPT 2>/dev/null
+    iptables -P OUTPUT ACCEPT 2>/dev/null
+    iptables -t nat -F 2>/dev/null
+    iptables -t mangle -F 2>/dev/null
+    iptables -F 2>/dev/null
+    iptables -X 2>/dev/null
+    netfilter-persistent save 2>/dev/null
+    green "VPS中的所有网络端口已开启"
 }
 
 show_usage() {
