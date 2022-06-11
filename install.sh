@@ -94,27 +94,20 @@ checkCentOS8(){
 }
 
 config_after_install() {
-    yellow "出于安全考虑，安装/更新完成后需要强制修改端口与账户密码"
-    read -rp "确认是否继续?[y/n]": config_confirm
-    if [[ x"${config_confirm}" == x"y" || x"${config_confirm}" == x"Y" ]]; then
-        read -rp "请设置您的账户名（默认admin）：" config_account
-        if [[ -z $config_account ]]; then
-            config_account="admin"
-        fi
-        read -rp "请设置您的账户密码（默认admin）：" config_password
-        if [[ -z $config_password ]]; then
-            config_password="admin"
-        fi
-        read -rp "请设置面板访问端口（默认54321）：" config_port
-        if [[ -z $config_port ]]; then
-            config_port=54321
-        fi
-        yellow "正在配置面板..."
-        /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
-        /usr/local/x-ui/x-ui setting -port ${config_port}
-    else
-        red "已取消,所有设置项均为默认设置,请及时修改"
+    read -rp "请设置您的账户名 [默认admin]：" config_account
+    if [[ -z $config_account ]]; then
+        config_account="admin"
     fi
+    read -rp "请设置您的账户密码 [默认admin]：" config_password
+    if [[ -z $config_password ]]; then
+        config_password="admin"
+    fi
+    read -rp "请设置面板访问端口 [默认54321]：" config_port
+    if [[ -z $config_port ]]; then
+        config_port=54321
+    fi
+    /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
+    /usr/local/x-ui/x-ui setting -port ${config_port}
 }
 
 show_login_address(){
