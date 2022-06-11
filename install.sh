@@ -102,7 +102,7 @@ config_after_install() {
         fi
         read -rp "请设置面板访问端口（默认54321）：" config_port
         if [[ -z $config_port ]]; then
-            config_port="54321"
+            config_port=54321
         fi
         yellow "正在配置面板设置..."
         /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
