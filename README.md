@@ -22,7 +22,7 @@
 - 更多证书申请方式（待实现）
 - 面板登录白名单设定（待实现）
 
-# 安装或升级命令
+# 安装 / 升级命令
 
 ```shell
 wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-ui/main/install.sh && bash install.sh
