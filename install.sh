@@ -109,7 +109,7 @@ config_after_install() {
         if [[ -z $config_port ]]; then
             config_port=54321
         fi
-        yellow "正在配置面板设置..."
+        yellow "正在配置面板..."
         /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
         /usr/local/x-ui/x-ui setting -port ${config_port}
     else
