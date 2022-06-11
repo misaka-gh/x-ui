@@ -12,6 +12,11 @@ yellow() {
     echo -e "\033[33m\033[01m$1\033[0m"
 }
 
+RED="\033[31m"
+GREEN="\033[32m"
+YELLOW="\033[33m"
+PLAIN="\033[0m"
+
 REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'")
 RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS")
 PACKAGE_UPDATE=("apt -y update" "apt -y update" "yum -y update" "yum -y update")
@@ -112,6 +117,28 @@ config_after_install() {
     fi
 }
 
+show_login_address(){
+    WgcfIPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    WgcfIPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    if [[ $WgcfIPv4Status =~ "on"|"plus" ]] || [[ $WgcfIPv6Status =~ "on"|"plus" ]]; then
+        wg-quick down wgcf >/dev/null 2>&1
+        v66=`curl -s6m8 https://ip.gs -k`
+        v44=`curl -s4m8 https://ip.gs -k`
+        wg-quick up wgcf >/dev/null 2>&1
+    else
+        v66=`curl -s6m8 https://ip.gs -k`
+        v44=`curl -s4m8 https://ip.gs -k`
+    fi
+    if [[ -n $v44 && -z $v66 ]]; then
+        echo -e "面板IPv4登录地址为：${GREEN}http://$v44:$config_port ${PLAIN}"
+    elif [[ -n $v66 && -z $v44 ]]; then
+        echo -e "面板IPv6登录地址为：${GREEN}http://[$v66]:$config_port ${PLAIN}"
+    elif [[ -n $v44 && -n $v66 ]]; then
+        echo -e "面板IPv4登录地址为：${GREEN}http://$v44:$config_port ${PLAIN}"
+        echo -e "面板IPv6登录地址为：${GREEN}http://[$v66]:$config_port ${PLAIN}"
+    fi
+}
+
 install_x-ui() {
     systemctl stop x-ui
     if [ $# == 0 ]; then
@@ -174,6 +201,8 @@ install_x-ui() {
     echo -e "x-ui install      - 安装 x-ui 面板"
     echo -e "x-ui uninstall    - 卸载 x-ui 面板"
     echo -e "----------------------------------------------"
+    echo -e ""
+    show_login_address
 }
 
 checkCentOS8
