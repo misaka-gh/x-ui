@@ -48,7 +48,7 @@ else
 fi
 
 if [ $(getconf WORD_BIT) != '32' ] && [ $(getconf LONG_BIT) != '64' ]; then
-    echo "X-ui面板不支持 32 位系统(x86)，请使用 64 位系统(x86_64)，如果检测有误，请联系作者"
+    echo "目前x-ui面板不支持 32 位系统(x86)，请使用 64 位系统(x86_64)，如果检测有误，请联系作者"
     rm -f install.sh
     exit -1
 fi
@@ -74,8 +74,8 @@ ${PACKAGE_UPDATE[int]}
 checkCentOS8(){
     if [[ -n $(cat /etc/os-release | grep "CentOS Linux 8") ]]; then
         yellow "检测到当前VPS系统为CentOS 8，是否升级为CentOS Stream 8以确保软件包正常安装？"
-        read -p "请输入选项 [y/n]：" comfirmCentOSStream
-        if [[ $comfirmCentOSStream == "y" ]]; then
+        read -rp "请输入选项 [y/n]：" comfirm
+        if [[ $comfirm == "y" ]]; then
             yellow "正在为你升级到CentOS Stream 8，大概需要10-30分钟的时间"
             sleep 1
             sed -i -e "s|releasever|releasever-stream|g" /etc/yum.repos.d/CentOS-*
@@ -90,23 +90,14 @@ checkCentOS8(){
 
 config_after_install() {
     yellow "出于安全考虑，安装/更新完成后需要强制修改端口与账户密码"
-    read -p "确认是否继续?[y/n]": config_confirm
+    read -rp "确认是否继续?[y/n]": config_confirm
     if [[ x"${config_confirm}" == x"y" || x"${config_confirm}" == x"Y" ]]; then
-        read -p "请设置您的账户名:" config_account
-        read -p "请设置您的账户密码:" config_password
-        read -p "请设置面板访问端口:" config_port
-        yellow "请核对面板登录信息是否正确："
-        green "您的账户名将设定为:${config_account}"
-        green "您的账户密码将设定为:${config_password}"
-        green "您的面板访问端口将设定为:${config_port}"
-        read -p "确认设定完成？[y/n]": config_confirm
-        if [[ x"${config_confirm}" == x"y" || x"${config_confirm}" == x"Y" ]]; then
-            yellow "确认设定，正在设定中"
-            /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
-            /usr/local/x-ui/x-ui setting -port ${config_port}
-        else
-            red "已取消,所有设置项均为默认设置,请及时修改"
-        fi
+        read -rp "请设置您的账户名（默认admin）：" config_account
+        read -rp "请设置您的账户密码（默认admin）：" config_password
+        read -rp "请设置面板访问端口（默认54321）：" config_port
+        yellow "正在配置面板设置..."
+        /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
+        /usr/local/x-ui/x-ui setting -port ${config_port}
     else
         red "已取消,所有设置项均为默认设置,请及时修改"
     fi
