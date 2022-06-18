@@ -59,16 +59,16 @@ if [[ $(getconf WORD_BIT) != '32' ]] && [[ $(getconf LONG_BIT) != '64' ]]; then
 fi
 
 if [[ $SYSTEM == "CentOS" ]]; then
-    if [[ ${os_version} -le 6 ]]; then
-        echo -e "请使用 CentOS 7 或更高版本的系统！\n" && exit 1
+    if [[ ${os_version} -lt 8 ]]; then
+        echo -e "请使用 CentOS 8 或更高版本的系统！\n" && exit 1
     fi
 elif [[ $SYSTEM == "Ubuntu" ]]; then
-    if [[ ${os_version} -lt 16 ]]; then
-        echo -e "请使用 Ubuntu 16 或更高版本的系统！\n" && exit 1
+    if [[ ${os_version} -lt 20 ]]; then
+        echo -e "请使用 Ubuntu 20 或更高版本的系统！\n" && exit 1
     fi
 elif [[ $SYSTEM == "Debian" ]]; then
-    if [[ ${os_version} -lt 8 ]]; then
-        echo -e "请使用 Debian 8 或更高版本的系统！\n" && exit 1
+    if [[ ${os_version} -lt 10 ]]; then
+        echo -e "请使用 Debian 10 或更高版本的系统！\n" && exit 1
     fi
 fi
 
