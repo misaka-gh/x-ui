@@ -112,25 +112,32 @@ config_after_install() {
     fi
 }
 
-show_login_address(){
+check_status(){
     WgcfIPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfIPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     if [[ $WgcfIPv4Status =~ "on"|"plus" ]] || [[ $WgcfIPv6Status =~ "on"|"plus" ]]; then
         wg-quick down wgcf >/dev/null 2>&1
-        v66=`curl -s6m8 https://ip.gs -k`
-        v44=`curl -s4m8 https://ip.gs -k`
+        v6=`curl -s6m8 https://ip.gs -k`
+        v4=`curl -s4m8 https://ip.gs -k`
         wg-quick up wgcf >/dev/null 2>&1
     else
-        v66=`curl -s6m8 https://ip.gs -k`
-        v44=`curl -s4m8 https://ip.gs -k`
+        v6=`curl -s6m8 https://ip.gs -k`
+        v4=`curl -s4m8 https://ip.gs -k`
+        if [[ -z $v4 && -n $v6 ]]; then
+            yellow "检测到为纯IPv6 VPS，已自动添加DNS64解析服务器"
+            echo -e "nameserver 2a01:4f8:c2c:123f::1" > /etc/resolv.conf
+        fi
     fi
+}
+
+show_login_address(){
     if [[ -n $v44 && -z $v66 ]]; then
-        echo -e "面板IPv4登录地址为：${GREEN}http://$v44:$config_port ${PLAIN}"
+        echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
     elif [[ -n $v66 && -z $v44 ]]; then
-        echo -e "面板IPv6登录地址为：${GREEN}http://[$v66]:$config_port ${PLAIN}"
+        echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
     elif [[ -n $v44 && -n $v66 ]]; then
-        echo -e "面板IPv4登录地址为：${GREEN}http://$v44:$config_port ${PLAIN}"
-        echo -e "面板IPv6登录地址为：${GREEN}http://[$v66]:$config_port ${PLAIN}"
+        echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
+        echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
     fi
 }
 
@@ -202,4 +209,5 @@ install_x-ui() {
 }
 
 checkCentOS8
+check_status
 install_x-ui $1
