@@ -22,7 +22,7 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-
 * 支持配置更多传输配置
 * 流量统计，限制流量，限制到期时间
 * 可自定义 xray 配置模板
-* 支持 https 访问面板（自备域名 + ssl 证书）
+* 支持 https 访问面板（请自行准备域名 + ssl 证书）
 * 支持纯IPv4、纯IPv6及原生双栈VPS
 * 支持 amd64、arm64、s390x CPU架构的VPS
 * 支持 Telegram Bot 提醒面板，SSH登录信息、流量使用情况
