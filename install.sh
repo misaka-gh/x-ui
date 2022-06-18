@@ -99,9 +99,9 @@ config_after_install() {
     read -rp "确认是否继续 [Y/N]: " yn
     if [[ $yn =~ "Y"|"y" ]]; then
         read -rp "请设置您的账户名 [默认随机用户名]：" config_account
-        [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8) && yellow "未设置用户名，将使用随机用户名：$config_account"
+        [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8)
         read -rp "请设置您的账户密码 [默认随机密码]：" config_password
-        [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8) && yellow "未设置密码，将使用随机密码：$config_password"
+        [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
         read -rp "请设置面板访问端口 [默认随机端口]：" config_port
         [[ -z $config_port ]] && config_port=$(echo $RANDOM) && yellow "未设置端口，将使用随机端口号：$config_port"
         /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
@@ -130,7 +130,7 @@ check_status(){
     fi
 }
 
-show_login_address(){
+show_login_info(){
     if [[ -n $v4 && -z $v6 ]]; then
         echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
     elif [[ -n $v6 && -z $v4 ]]; then
@@ -139,6 +139,8 @@ show_login_address(){
         echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
         echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
     fi
+    echo -e "x-ui面板登录用户名：${GREEN}$config_account ${PLAIN}"
+    echo -e "x-ui面板登录密码：${GREEN}$config_password ${PLAIN}"
 }
 
 install_x-ui() {
@@ -188,7 +190,7 @@ install_x-ui() {
     rm -f install.sh
     green "x-ui v${last_version} 安装完成，面板已启动"
     echo -e ""
-    show_login_address
+    show_login_info
     echo -e ""
     echo -e "x-ui 管理脚本使用方法: "
     echo -e "----------------------------------------------"
