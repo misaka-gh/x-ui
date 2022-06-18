@@ -62,6 +62,7 @@ confirm() {
     else
         read -p "$1 [y/n]: " temp
     fi
+
     if [[ x"${temp}" == x"y" || x"${temp}" == x"Y" ]]; then
         return 0
     else
@@ -70,7 +71,7 @@ confirm() {
 }
 
 confirm_restart() {
-    confirm "是否重启X-ui面板，重启面板也会重启xray" "y"
+    confirm "是否重启x-ui面板，重启面板也会重启xray" "y"
     if [[ $? == 0 ]]; then
         restart
     else
@@ -95,7 +96,7 @@ install() {
 }
 
 update() {
-    confirm "本功能会强制重装当前最新版X-ui面板，数据不会丢失，是否继续?" "n"
+    confirm "本功能会强制重装当前最新版x-ui面板，数据不会丢失，是否继续?" "n"
     if [[ $? != 0 ]]; then
         red "已取消"
         if [[ $# == 0 ]]; then
@@ -111,7 +112,7 @@ update() {
 }
 
 uninstall() {
-    confirm "确定要卸载X-ui面板吗，xray 也会卸载?" "n"
+    confirm "确定要卸载x-ui面板吗，xray 也会卸载?" "n"
     if [[ $? != 0 ]]; then
         if [[ $# == 0 ]]; then
             show_menu
@@ -125,8 +126,8 @@ uninstall() {
     systemctl reset-failed
     rm /etc/x-ui/ -rf
     rm /usr/local/x-ui/ -rf
-    echo -e "卸载X-ui面板成功"
     rm /usr/bin/x-ui -f
+    green "x-ui面板已彻底卸载成功！"
 
     if [[ $# == 0 ]]; then
         before_show_menu
@@ -134,7 +135,7 @@ uninstall() {
 }
 
 reset_user() {
-    confirm "确定要将面板用户名和密码重置为 admin 吗" "n"
+    confirm "确定要将面板用户名和密码都重置为 admin 吗" "n"
     if [[ $? != 0 ]]; then
         if [[ $# == 0 ]]; then
             show_menu
@@ -175,15 +176,15 @@ start() {
     check_status
     if [[ $? == 0 ]]; then
         echo ""
-        green "X-ui面板已运行，无需再次启动，如需重启请选择重启"
+        green "x-ui面板已运行，无需再次启动，如需重启面板请使用重启选项"
     else
         systemctl start x-ui
         sleep 2
         check_status
         if [[ $? == 0 ]]; then
-            green "X-ui 面板启动成功"
+            green "x-ui 面板启动成功"
         else
-            red "X-ui 面板启动失败，可能是因为启动时间超过了两秒，请稍后查看日志信息"
+            red "x-ui 面板启动失败，可能是因为启动时间超过了两秒，请稍后查看日志信息"
         fi
     fi
 
@@ -196,15 +197,15 @@ stop() {
     check_status
     if [[ $? == 1 ]]; then
         echo ""
-        green "X-ui 面板已停止，无需再次停止"
+        green "x-ui 面板目前已停止，无需再次停止"
     else
         systemctl stop x-ui
         sleep 2
         check_status
         if [[ $? == 1 ]]; then
-            green "X-ui 与 xray 停止成功"
+            green "x-ui 与 xray 停止成功"
         else
-            red "X-ui 面板停止失败，可能是因为停止时间超过了两秒，请稍后查看日志信息"
+            red "x-ui 面板停止失败，可能是因为停止时间超过了两秒，请稍后使用 x-ui log 查看日志信息"
         fi
     fi
 
@@ -218,9 +219,9 @@ restart() {
     sleep 2
     check_status
     if [[ $? == 0 ]]; then
-        green "X-ui 与 xray 重启成功"
+        green "x-ui 与 xray 重启成功"
     else
-        red "X-ui 面板重启失败，可能是因为启动时间超过了两秒，请稍后查看日志信息"
+        red "x-ui 面板重启失败，可能是因为启动时间超过了两秒，请稍后使用 x-ui log 查看日志信息"
     fi
     if [[ $# == 0 ]]; then
         before_show_menu
@@ -237,9 +238,9 @@ status() {
 enable_xui() {
     systemctl enable x-ui
     if [[ $? == 0 ]]; then
-        green "X-ui 设置开机自启成功"
+        green "x-ui 设置开机自启成功"
     else
-        red "X-ui 设置开机自启失败"
+        red "x-ui 设置开机自启失败"
     fi
 
     if [[ $# == 0 ]]; then
@@ -250,9 +251,9 @@ enable_xui() {
 disable_xui() {
     systemctl disable x-ui
     if [[ $? == 0 ]]; then
-        green "X-ui 取消开机自启成功"
+        green "x-ui 取消开机自启成功"
     else
-        red "X-ui 取消开机自启失败"
+        red "x-ui 取消开机自启失败"
     fi
 
     if [[ $# == 0 ]]; then
@@ -284,7 +285,7 @@ update_shell() {
     wget -O /usr/bin/x-ui -N --no-check-certificate https://github.com/Misaka-blog/x-ui/raw/master/x-ui.sh
     if [[ $? != 0 ]]; then
         echo ""
-        red "下载脚本失败，请检查本机能否连接 Github"
+        red "下载脚本失败，请检查本机能否连接 GitHub"
         before_show_menu
     else
         chmod +x /usr/bin/x-ui
@@ -318,7 +319,7 @@ check_uninstall() {
     check_status
     if [[ $? != 2 ]]; then
         echo ""
-        red "X-ui 面板已安装，请不要重复安装"
+        red "x-ui 面板已安装，请不要重复安装面板"
         if [[ $# == 0 ]]; then
             before_show_menu
         fi
@@ -387,10 +388,6 @@ show_xray_status() {
     fi
 }
 
-ssl_cert_issue() {
-    wget -N https://raw.githubusercontents.com/Misaka-blog/acme-1key/master/acme1key.sh && bash acme1key.sh
-}
-
 open_ports(){
     systemctl stop firewalld.service 2>/dev/null
     systemctl disable firewalld.service 2>/dev/null
@@ -448,8 +445,9 @@ show_menu() {
  ${GREEN}13.${PLAIN} 取消 x-ui 开机自启
 ————————————————
  ${GREEN}14.${PLAIN} 一键安装 bbr (最新内核)
- ${GREEN}15.${PLAIN} 一键申请SSL证书(acme申请)
+ ${GREEN}15.${PLAIN} 一键申请证书 (acme脚本申请)
  ${GREEN}16.${PLAIN} VPS防火墙放开所有网络端口
+ ${GREEN}17.${PLAIN} 安装并配置CloudFlare WARP
  "
     show_status
     echo && read -p "请输入选择 [0-16]: " num
@@ -470,8 +468,9 @@ show_menu() {
         12) check_install && enable_xui ;;
         13) check_install && disable_xui ;;
         14) install_bbr ;;
-        15) ssl_cert_issue ;;
+        15) wget -N https://raw.githubusercontents.com/Misaka-blog/acme-1key/master/acme1key.sh && bash acme1key.sh ;;
         16) open_ports ;;
+        17) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/misakawarp.sh && bash misakawarp.sh ;;
         *) red "请输入正确的数字 [0-16]" ;;
     esac
 }
