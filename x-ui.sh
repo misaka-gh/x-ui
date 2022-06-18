@@ -107,7 +107,7 @@ update() {
     bash <(curl -Ls https://raw.githubusercontents.com/Misaka-blog/x-ui/master/install.sh)
     if [[ $? == 0 ]]; then
         green "更新完成，已自动重启面板 "
-        exit 0
+        exit 1
     fi
 }
 
@@ -289,7 +289,7 @@ update_shell() {
         before_show_menu
     else
         chmod +x /usr/bin/x-ui
-        green "升级脚本成功，请重新运行脚本" && exit 0
+        green "升级脚本成功，请重新运行脚本" && exit 1
     fi
 }
 
@@ -453,7 +453,7 @@ show_menu() {
     echo && read -p "请输入选择 [0-16]: " num
 
     case "${num}" in
-        0) exit 0 ;;
+        0) exit 1 ;;
         1) check_uninstall && install ;;
         2) check_install && update ;;
         3) check_install && uninstall ;;
