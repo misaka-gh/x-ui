@@ -119,14 +119,14 @@ check_status(){
         wg-quick down wgcf >/dev/null 2>&1
         v6=`curl -s6m8 https://ip.gs -k`
         v4=`curl -s4m8 https://ip.gs -k`
-        if [[ -z $v4 && -n $v6 ]]; then
-            yellow "检测到为纯IPv6 VPS，已自动添加DNS64解析服务器"
-            echo -e "nameserver 2a01:4f8:c2c:123f::1" > /etc/resolv.conf
-        fi
         wg-quick up wgcf >/dev/null 2>&1
     else
         v6=`curl -s6m8 https://ip.gs -k`
         v4=`curl -s4m8 https://ip.gs -k`
+        if [[ -z $v4 && -n $v6 ]]; then
+            yellow "检测到为纯IPv6 VPS，已自动添加DNS64解析服务器"
+            echo -e "nameserver 2a01:4f8:c2c:123f::1" > /etc/resolv.conf
+        fi
     fi
 }
 
