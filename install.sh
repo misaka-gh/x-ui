@@ -131,11 +131,11 @@ check_status(){
 }
 
 show_login_address(){
-    if [[ -n $v44 && -z $v66 ]]; then
+    if [[ -n $v4 && -z $v6 ]]; then
         echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
-    elif [[ -n $v66 && -z $v44 ]]; then
+    elif [[ -n $v6 && -z $v4 ]]; then
         echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
-    elif [[ -n $v44 && -n $v66 ]]; then
+    elif [[ -n $v4 && -n $v6 ]]; then
         echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
         echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
     fi
