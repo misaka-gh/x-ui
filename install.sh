@@ -72,7 +72,8 @@ elif [[ $SYSTEM == "Debian" ]]; then
     fi
 fi
 
-${PACKAGE_UPDATE[int]}
+[[ ! $SYSTEM == "CentOS" ]] && ${PACKAGE_UPDATE[int]}
+
 [[ -z $(type -P curl) ]] && ${PACKAGE_INSTALL[int]} curl
 [[ -z $(type -P tar) ]] && ${PACKAGE_INSTALL[int]} tar
 
@@ -94,20 +95,21 @@ checkCentOS8(){
 }
 
 config_after_install() {
-    read -rp "请设置您的账户名 [默认admin]：" config_account
-    if [[ -z $config_account ]]; then
-        config_account="admin"
-    fi
-    read -rp "请设置您的账户密码 [默认admin]：" config_password
-    if [[ -z $config_password ]]; then
-        config_password="admin"
-    fi
-    read -rp "请设置面板访问端口 [默认54321]：" config_port
-    if [[ -z $config_port ]]; then
+    yellow "出于安全考虑，安装/更新完成后需要强制修改端口与账户密码"
+    read -rp "确认是否继续 [Y/N]: " yn
+    if [[ $yn == "Y"|"y" ]]; then
+        read -rp "请设置您的账户名 [默认随机用户名]：" config_account
+        [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8) && yellow "未设置用户名，将使用随机用户名：$config_account"
+        read -rp "请设置您的账户密码 [默认随机密码]：" config_password
+        [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8) && yellow "未设置密码，将使用随机密码：$config_password"
+        read -rp "请设置面板访问端口 [默认随机端口]：" config_port
+        [[ -z $config_port ]] && config_port=$(echo $RANDOM) && yellow "未设置端口，将使用随机端口号：$config_port"
+        /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
+        /usr/local/x-ui/x-ui setting -port ${config_port}
+    else
+        red "已取消配置过程，将使用默认配置！"
         config_port=54321
     fi
-    /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
-    /usr/local/x-ui/x-ui setting -port ${config_port}
 }
 
 show_login_address(){
@@ -179,6 +181,8 @@ install_x-ui() {
     rm -f install.sh
     green "x-ui v${last_version} 安装完成，面板已启动"
     echo -e ""
+    show_login_address
+    echo -e ""
     echo -e "x-ui 管理脚本使用方法: "
     echo -e "----------------------------------------------"
     echo -e "x-ui              - 显示管理菜单 (功能更多)"
@@ -195,7 +199,6 @@ install_x-ui() {
     echo -e "x-ui uninstall    - 卸载 x-ui 面板"
     echo -e "----------------------------------------------"
     echo -e ""
-    show_login_address
 }
 
 checkCentOS8
