@@ -52,7 +52,7 @@ else
     exit 1
 fi
 
-if [ $(getconf WORD_BIT) != '32' ] && [ $(getconf LONG_BIT) != '64' ]; then
+if [[ $(getconf WORD_BIT) != '32' ]] && [[ $(getconf LONG_BIT) != '64' ]]; then
     echo "目前x-ui面板不支持 32 位系统(x86)，请使用 64 位系统(x86_64)，如果检测有误，请联系作者"
     rm -f install.sh
     exit -1
@@ -97,7 +97,7 @@ checkCentOS8(){
 config_after_install() {
     yellow "出于安全考虑，安装/更新完成后需要强制修改端口与账户密码"
     read -rp "确认是否继续 [Y/N]: " yn
-    if [[ $yn == "Y"|"y" ]]; then
+    if [[ $yn =~ "Y"|"y" ]]; then
         read -rp "请设置您的账户名 [默认随机用户名]：" config_account
         [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8) && yellow "未设置用户名，将使用随机用户名：$config_account"
         read -rp "请设置您的账户密码 [默认随机密码]：" config_password
