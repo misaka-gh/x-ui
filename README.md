@@ -2,7 +2,7 @@
 
 支持多协议多用户的 xray 面板
 
-# 安装 / 升级命令
+## 安装 / 升级命令
 
 ```shell
 wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-ui/main/install.sh && bash install.sh
