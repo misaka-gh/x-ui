@@ -62,13 +62,6 @@ fi
 [[ $SYSTEM == "Ubuntu" ]] && [[ ${os_version} -lt 20 ]] && echo -e "请使用 Ubuntu 20 或更高版本的系统！" && exit 1
 [[ $SYSTEM == "Debian" ]] && [[ ${os_version} -lt 10 ]] && echo -e "请使用 Debian 10 或更高版本的系统！" && exit 1
 
-install_base(){
-    [[ ! $SYSTEM == "CentOS" ]] && ${PACKAGE_UPDATE[int]}
-    
-    [[ -z $(type -P curl) ]] && ${PACKAGE_INSTALL[int]} curl
-    [[ -z $(type -P tar) ]] && ${PACKAGE_INSTALL[int]} tar
-}
-
 check_centos8(){
     if [[ -n $(cat /etc/os-release | grep "CentOS Linux 8") ]]; then
         yellow "检测到当前VPS系统为CentOS 8，是否升级为CentOS Stream 8以确保软件包正常安装？"
@@ -83,24 +76,6 @@ check_centos8(){
             red "已取消升级过程，脚本即将退出！"
             exit 1
         fi
-    fi
-}
-
-config_after_install() {
-    yellow "出于安全考虑，安装/更新完成后需要强制修改端口与账户密码"
-    read -rp "确认是否继续 [Y/N]: " yn
-    if [[ $yn =~ "Y"|"y" ]]; then
-        read -rp "请设置您的账户名 [默认随机用户名]：" config_account
-        [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8)
-        read -rp "请设置您的账户密码 [默认随机密码]：" config_password
-        [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
-        read -rp "请设置面板访问端口 [默认随机端口]：" config_port
-        [[ -z $config_port ]] && config_port=$(echo $RANDOM) && yellow "未设置端口，将使用随机端口号：$config_port"
-        /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
-        /usr/local/x-ui/x-ui setting -port ${config_port}
-    else
-        red "已取消配置过程，将使用默认配置！"
-        config_port=54321
     fi
 }
 
@@ -120,6 +95,44 @@ check_status(){
             echo -e "nameserver 2a01:4f8:c2c:123f::1" > /etc/resolv.conf
         fi
     fi
+}
+
+config_panel() {
+    yellow "出于安全考虑，安装/更新完成后需要强制修改端口与账户密码"
+    read -rp "确认是否继续 [Y/N]: " yn
+    if [[ $yn =~ "Y"|"y" ]]; then
+        read -rp "请设置您的账户名 [默认随机用户名]：" config_account
+        [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8)
+        read -rp "请设置您的账户密码 [默认随机密码]：" config_password
+        [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
+        read -rp "请设置面板访问端口 [默认随机端口]：" config_port
+        [[ -z $config_port ]] && config_port=$(echo $RANDOM) && yellow "未设置端口，将使用随机端口号：$config_port"
+        /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
+        /usr/local/x-ui/x-ui setting -port ${config_port}
+    else
+        red "已取消配置端口与账户密码，将使用默认的配置！"
+        config_account="admin"
+        config_password="admin"
+        config_port=54321
+    fi
+}
+
+install_base(){
+    if [[ ! $SYSTEM == "CentOS" ]]; then
+        ${PACKAGE_UPDATE[int]}
+    fi
+    
+    if [[ -z $(type -P curl) ]]; then
+        yellow "检测curl未安装，正在安装中..."
+        ${PACKAGE_INSTALL[int]} curl
+    fi
+
+    if [[ -z $(type -P tar) ]]; then
+        yellow "检测tar未安装，正在安装中..."
+        ${PACKAGE_INSTALL[int]} tar
+    fi
+
+    check_status
 }
 
 show_login_info(){
@@ -174,7 +187,7 @@ install_x-ui() {
     wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontents.com/Misaka-blog/x-ui/main/x-ui.sh
     chmod +x /usr/local/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
-    config_after_install
+    config_panel
     systemctl daemon-reload
     systemctl enable x-ui
     systemctl start x-ui
@@ -203,5 +216,4 @@ install_x-ui() {
 }
 
 check_centos8
-check_status
 install_x-ui $1
