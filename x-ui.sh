@@ -106,7 +106,7 @@ install() {
 
 update() {
     read -rp "本功能会更新最新版x-ui面板，数据不会丢失，是否继续?" yn
-    if [[ $yn =~ "Y"|"y "]]; then
+    if [[ $yn =~ "Y"|"y " ]]; then
         systemctl stop x-ui
         if [[ -e /usr/local/x-ui/ ]]; then
             rm -rf /usr/local/x-ui/
