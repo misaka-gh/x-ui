@@ -473,6 +473,34 @@ show_usage() {
     echo "------------------------------------------"
 }
 
+show_login_info(){
+    WgcfIPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    WgcfIPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    if [[ $WgcfIPv4Status =~ "on"|"plus" ]] || [[ $WgcfIPv6Status =~ "on"|"plus" ]]; then
+        wg-quick down wgcf >/dev/null 2>&1
+        v6=`curl -s6m8 https://ip.gs -k`
+        v4=`curl -s4m8 https://ip.gs -k`
+        wg-quick up wgcf >/dev/null 2>&1
+    else
+        v6=`curl -s6m8 https://ip.gs -k`
+        v4=`curl -s4m8 https://ip.gs -k`
+        if [[ -z $v4 && -n $v6 ]]; then
+            yellow "检测到为纯IPv6 VPS，已自动添加DNS64解析服务器"
+            echo -e "nameserver 2a01:4f8:c2c:123f::1" > /etc/resolv.conf
+        fi
+    fi
+
+    config_port=$(/usr/local/x-ui/x-ui 2>&1 | grep tcp | awk '{print $5}' | sed "s/://g")
+    if [[ -n $v4 && -z $v6 ]]; then
+        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
+    elif [[ -n $v6 && -z $v4 ]]; then
+        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+    elif [[ -n $v4 && -n $v6 ]]; then
+        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
+        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+    fi
+}
+
 show_menu() {
     echo -e "
   ${GREEN}x-ui 面板管理脚本${PLAIN}
@@ -501,6 +529,8 @@ show_menu() {
  ${GREEN}17.${PLAIN} 安装并配置CloudFlare WARP
     "
     show_status
+    echo ""
+    show_login_info
     echo && read -rp "请输入选择 [0-17]: " num
     
     case "${num}" in
