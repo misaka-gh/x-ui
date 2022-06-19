@@ -8,6 +8,12 @@
 wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-ui/main/install.sh && bash install.sh
 ```
 
+注：据TG群友及本人测试，x-ui默认生成的密码是无法使用在SS2022协议，需要使用以下命令生成SS2022的密码后，设置节点再进行使用
+
+```shell
+openssl rand -base64 32
+```
+
 ## 建议系统
 
 * CentOS 8+
@@ -18,7 +24,7 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-
 
 * 系统状态监控
 * 支持多用户多协议，网页可视化操作
-* 支持的协议：vmess、vless、trojan、shadowsocks、dokodemo-door、socks、http
+* 支持的协议：vmess、vless、trojan、shadowsocks、shadowsocks 2022、dokodemo-door、socks、http
 * 支持配置更多传输配置
 * 流量统计，限制流量，限制到期时间
 * 可自定义 xray 配置模板
