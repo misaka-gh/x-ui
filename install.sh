@@ -71,8 +71,6 @@ check_centos8(){
 }
 
 check_status(){
-    yellow "正在检查VPS系统配置环境，请稍等..."
-    sleep 2
     WgcfIPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfIPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     if [[ $WgcfIPv4Status =~ "on"|"plus" ]] || [[ $WgcfIPv6Status =~ "on"|"plus" ]]; then
@@ -172,7 +170,22 @@ download_xui(){
     chmod +x /usr/bin/x-ui
 }
 
+info_bar(){
+    echo "#############################################################"
+    echo -e "#                   ${RED}x-ui Misaka 魔改优化版${PLAIN}                  #"
+    echo -e "# ${GREEN}作者${PLAIN}: vaxilu, FranzKafkaYu, Misaka No                     #"
+    echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
+    echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
+    echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
+    echo "#############################################################"
+    echo ""
+    yellow "正在检查VPS系统配置环境，请稍等..."
+    sleep 2
+}
+
 install_xui() {
+    info_bar
+
     systemctl stop x-ui
 
     install_base
