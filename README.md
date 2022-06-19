@@ -8,6 +8,8 @@
 wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-ui/main/install.sh && bash install.sh
 ```
 
+快捷方式：`x-ui`
+
 ## 建议系统
 
 * CentOS 7+
