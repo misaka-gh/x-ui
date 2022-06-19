@@ -2,6 +2,8 @@
 
 支持多协议多用户的 xray 面板
 
+博客说明：https://owo.misaka.rest/misakablog-xui/
+
 ## 安装命令
 
 ```shell
