@@ -117,14 +117,30 @@ update() {
         rm -rf /usr/local/x-ui/
     fi
     
-    last_version=$1
-    url="https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz"
-    yellow "开始安装 x-ui v$1"
-    wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz ${url}
-    if [[ $? -ne 0 ]]; then
-        red "下载 x-ui v$1 失败，请确保此版本存在"
-        rm -f install.sh
-        exit 1
+    if [ $# == 0 ]; then
+        last_version=$(curl -Ls "https://api.github.com/repos/Misaka-blog/x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        if [[ ! -n "$last_version" ]]; then
+            red "检测 x-ui 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 x-ui 版本安装"
+            rm -f install.sh
+            exit 1
+        fi
+        yellow "检测到 x-ui 最新版本：${last_version}，开始安装"
+        wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz
+        if [[ $? -ne 0 ]]; then
+            red "下载 x-ui 失败，请确保你的服务器能够连接并下载 Github 的文件"
+            rm -f install.sh
+            exit 1
+        fi
+    else
+        last_version=$1
+        url="https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz"
+        yellow "开始安装 x-ui v$1"
+        wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz ${url}
+        if [[ $? -ne 0 ]]; then
+            red "下载 x-ui v$1 失败，请确保此版本存在"
+            rm -f install.sh
+            exit 1
+        fi
     fi
     
     cd /usr/local/
