@@ -164,7 +164,7 @@ download_xui(){
 
 info_bar(){
     echo "#############################################################"
-    echo -e "#                   ${RED}x-ui Misaka 魔改优化版${PLAIN}                  #"
+    echo -e "#                   ${RED}Misaka x-ui 魔改优化版${PLAIN}                  #"
     echo -e "# ${GREEN}作者${PLAIN}: vaxilu, FranzKafkaYu, Misaka No                     #"
     echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
     echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
