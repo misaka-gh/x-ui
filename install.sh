@@ -90,22 +90,14 @@ check_status(){
 
 config_panel() {
     yellow "出于安全考虑，安装/更新完成后需要强制修改端口与账户密码"
-    read -rp "确认是否继续 [Y/N]: " yn
-    if [[ $yn =~ "Y"|"y" ]]; then
-        read -rp "请设置您的账户名 [默认随机用户名]：" config_account
-        [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8)
-        read -rp "请设置您的账户密码 [默认随机密码]：" config_password
-        [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
-        read -rp "请设置面板访问端口 [默认随机端口]：" config_port
-        [[ -z $config_port ]] && config_port=$(echo $RANDOM) && yellow "未设置端口，将使用随机端口号：$config_port"
-        /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
-        /usr/local/x-ui/x-ui setting -port ${config_port}
-    else
-        red "已取消配置端口与账户密码，将使用默认的配置！"
-        config_account="admin"
-        config_password="admin"
-        config_port=54321
-    fi
+    read -rp "请设置您的账户名 [默认随机用户名]：" config_account
+    [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8)
+    read -rp "请设置您的账户密码 [默认随机密码]：" config_password
+    [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
+    read -rp "请设置面板访问端口 [默认随机端口]：" config_port
+    [[ -z $config_port ]] && config_port=$(echo $RANDOM) && yellow "未设置端口，将使用随机端口号：$config_port"
+    /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
+    /usr/local/x-ui/x-ui setting -port ${config_port}
 }
 
 install_base(){
@@ -117,12 +109,12 @@ install_base(){
         yellow "检测curl未安装，正在安装中..."
         ${PACKAGE_INSTALL[int]} curl
     fi
-
+    
     if [[ -z $(type -P tar) ]]; then
         yellow "检测tar未安装，正在安装中..."
         ${PACKAGE_INSTALL[int]} tar
     fi
-
+    
     check_status
 }
 
@@ -130,7 +122,7 @@ download_xui(){
     if [[ -e /usr/local/x-ui/ ]]; then
         rm -rf /usr/local/x-ui/
     fi
-
+    
     if [ $# == 0 ]; then
         last_version=$(curl -Ls "https://api.github.com/repos/Misaka-blog/x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
@@ -156,15 +148,15 @@ download_xui(){
             exit 1
         fi
     fi
-
+    
     cd /usr/local/
     tar zxvf x-ui-linux-$(archAffix).tar.gz
     rm -f x-ui-linux-$(archAffix).tar.gz
-
+    
     cd x-ui
     chmod +x x-ui bin/xray-linux-$(archAffix)
     cp -f x-ui.service /etc/systemd/system/
-
+    
     wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-ui/main/x-ui.sh -O /usr/bin/x-ui
     chmod +x /usr/local/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
@@ -185,17 +177,17 @@ info_bar(){
 
 install_xui() {
     info_bar
-
+    
     systemctl stop x-ui
-
+    
     install_base
     download_xui $1
     config_panel
-
+    
     systemctl daemon-reload
     systemctl enable x-ui
     systemctl start x-ui
-
+    
     cd $cur_dir
     rm -f install.sh
     green "x-ui v${last_version} 安装完成，面板已启动"
