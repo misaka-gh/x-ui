@@ -1,5 +1,10 @@
 #!/bin/bash
 
+RED="\033[31m"
+GREEN="\033[32m"
+YELLOW="\033[33m"
+PLAIN="\033[0m"
+
 red() {
     echo -e "\033[31m\033[01m$1\033[0m"
 }
@@ -11,11 +16,6 @@ green() {
 yellow() {
     echo -e "\033[33m\033[01m$1\033[0m"
 }
-
-RED="\033[31m"
-GREEN="\033[32m"
-YELLOW="\033[33m"
-PLAIN="\033[0m"
 
 REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'")
 RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS")
@@ -40,7 +40,7 @@ done
 cur_dir=$(pwd)
 os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
 
-[[ $SYSTEM == "CentOS" ]] && [[ ${os_version} -lt 8 ]] && echo -e "请使用 CentOS 8 或更高版本的系统！" && exit 1
+[[ $SYSTEM == "CentOS" ]] && [[ ${os_version} -lt 7 ]] && echo -e "请使用 CentOS 7 或更高版本的系统！" && exit 1
 [[ $SYSTEM == "Ubuntu" ]] && [[ ${os_version} -lt 20 ]] && echo -e "请使用 Ubuntu 20 或更高版本的系统！" && exit 1
 [[ $SYSTEM == "Debian" ]] && [[ ${os_version} -lt 10 ]] && echo -e "请使用 Debian 10 或更高版本的系统！" && exit 1
 
