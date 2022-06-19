@@ -64,12 +64,12 @@ archAffix(){
 
 confirm() {
     if [[ $# > 1 ]]; then
-        echo && read -p "$1 [默认$2]: " temp
+        echo && read -rp "$1 [默认$2]: " temp
         if [[ x"${temp}" == x"" ]]; then
             temp=$2
         fi
     else
-        read -p "$1 [y/n]: " temp
+        read -rp "$1 [y/n]: " temp
     fi
     
     if [[ x"${temp}" == x"y" || x"${temp}" == x"Y" ]]; then
@@ -105,58 +105,59 @@ install() {
 }
 
 update() {
-    confirm "本功能会强制重装当前最新版x-ui面板，数据不会丢失，是否继续?" "n"
-    if [[ $? != 0 ]]; then
-        red "已取消"
-        if [[ $# == 0 ]]; then
-            before_show_menu
+    read -rp "本功能会更新最新版x-ui面板，数据不会丢失，是否继续?" yn
+    if [[ $yn =~ "Y"|"y "]]; then
+        systemctl stop x-ui
+        if [[ -e /usr/local/x-ui/ ]]; then
+            rm -rf /usr/local/x-ui/
         fi
-        return 0
-    fi
-    if [[ -e /usr/local/x-ui/ ]]; then
-        rm -rf /usr/local/x-ui/
-    fi
-    
-    if [ $# == 0 ]; then
-        last_version=$(curl -Ls "https://api.github.com/repos/Misaka-blog/x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-        if [[ ! -n "$last_version" ]]; then
-            red "检测 x-ui 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 x-ui 版本安装"
-            rm -f install.sh
-            exit 1
+        
+        if [ $# == 0 ]; then
+            last_version=$(curl -Ls "https://api.github.com/repos/Misaka-blog/x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+            if [[ ! -n "$last_version" ]]; then
+                red "检测 x-ui 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 x-ui 版本安装"
+                rm -f install.sh
+                exit 1
+            fi
+            yellow "检测到 x-ui 最新版本：${last_version}，开始安装"
+            wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz
+            if [[ $? -ne 0 ]]; then
+                red "下载 x-ui 失败，请确保你的服务器能够连接并下载 Github 的文件"
+                rm -f install.sh
+                exit 1
+            fi
+        else
+            last_version=$1
+            url="https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz"
+            yellow "开始安装 x-ui v$1"
+            wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz ${url}
+            if [[ $? -ne 0 ]]; then
+                red "下载 x-ui v$1 失败，请确保此版本存在"
+                rm -f install.sh
+                exit 1
+            fi
         fi
-        yellow "检测到 x-ui 最新版本：${last_version}，开始安装"
-        wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz
-        if [[ $? -ne 0 ]]; then
-            red "下载 x-ui 失败，请确保你的服务器能够连接并下载 Github 的文件"
-            rm -f install.sh
-            exit 1
-        fi
-    else
-        last_version=$1
-        url="https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz"
-        yellow "开始安装 x-ui v$1"
-        wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz ${url}
-        if [[ $? -ne 0 ]]; then
-            red "下载 x-ui v$1 失败，请确保此版本存在"
-            rm -f install.sh
-            exit 1
-        fi
-    fi
-    
-    cd /usr/local/
-    tar zxvf x-ui-linux-$(archAffix).tar.gz
-    rm -f x-ui-linux-$(archAffix).tar.gz
-    
-    cd x-ui
-    chmod +x x-ui bin/xray-linux-$(archAffix)
-    cp -f x-ui.service /etc/systemd/system/
-    
-    wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-ui/main/x-ui.sh -O /usr/bin/x-ui
-    chmod +x /usr/local/x-ui/x-ui.sh
-    chmod +x /usr/bin/x-ui
-    
-    if [[ $? == 0 ]]; then
+        
+        cd /usr/local/
+        tar zxvf x-ui-linux-$(archAffix).tar.gz
+        rm -f x-ui-linux-$(archAffix).tar.gz
+        
+        cd x-ui
+        chmod +x x-ui bin/xray-linux-$(archAffix)
+        cp -f x-ui.service /etc/systemd/system/
+        
+        wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-ui/main/x-ui.sh -O /usr/bin/x-ui
+        chmod +x /usr/local/x-ui/x-ui.sh
+        chmod +x /usr/bin/x-ui
+        
+        systemctl daemon-reload
+        systemctl enable x-ui
+        systemctl start x-ui
+        
         green "更新完成，已自动重启面板 "
+        exit 1
+    else
+        red "已取消升级x-ui面板"
         exit 1
     fi
 }
@@ -500,7 +501,7 @@ show_menu() {
  ${GREEN}17.${PLAIN} 安装并配置CloudFlare WARP
     "
     show_status
-    echo && read -p "请输入选择 [0-17]: " num
+    echo && read -rp "请输入选择 [0-17]: " num
     
     case "${num}" in
         0) exit 1 ;;
