@@ -37,30 +37,20 @@ done
 
 [[ -z $SYSTEM ]] && red "不支持当前VPS系统，请使用主流的操作系统" && exit 1
 
-arch=$(arch)
 os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
-
-if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
-    arch="amd64"
-    elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
-    arch="arm64"
-    elif [[ $arch == "s390x" ]]; then
-    arch="s390x"
-else
-    echo -e "不支持的CPU架构！脚本将自动退出！"
-    rm -f install.sh
-    exit 1
-fi
-
-if [[ $(getconf WORD_BIT) != '32' ]] && [[ $(getconf LONG_BIT) != '64' ]]; then
-    echo "目前x-ui面板不支持 32 位系统(x86)，请使用 64 位系统(x86_64)，如果检测有误，请联系作者"
-    rm -f install.sh
-    exit -1
-fi
 
 [[ $SYSTEM == "CentOS" ]] && [[ ${os_version} -lt 8 ]] && echo -e "请使用 CentOS 8 或更高版本的系统！" && exit 1
 [[ $SYSTEM == "Ubuntu" ]] && [[ ${os_version} -lt 20 ]] && echo -e "请使用 Ubuntu 20 或更高版本的系统！" && exit 1
 [[ $SYSTEM == "Debian" ]] && [[ ${os_version} -lt 10 ]] && echo -e "请使用 Debian 10 或更高版本的系统！" && exit 1
+
+archAffix(){
+    case "$(uname -m)" in
+        x86_64 | x64 | amd64 ) echo 'amd64' ;;
+        armv8 | arm64 | aarch64 ) echo 'arm64' ;;
+        s390x ) echo 's390x' ;;
+        * ) red "不支持的CPU架构！" && rm -f install.sh && exit 1 ;;
+    esac
+}
 
 check_centos8(){
     if [[ -n $(cat /etc/os-release | grep "CentOS Linux 8") ]]; then
@@ -136,21 +126,11 @@ install_base(){
     check_status
 }
 
-show_login_info(){
-    if [[ -n $v4 && -z $v6 ]]; then
-        echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
-        elif [[ -n $v6 && -z $v4 ]]; then
-        echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
-        elif [[ -n $v4 && -n $v6 ]]; then
-        echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
-        echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+download_xui(){
+    if [[ -e /usr/local/x-ui/ ]]; then
+        rm -rf /usr/local/x-ui/
     fi
-    echo -e "x-ui面板登录用户名：${GREEN}$config_account ${PLAIN}"
-    echo -e "x-ui面板登录密码：${GREEN}$config_password ${PLAIN}"
-}
 
-install_x-ui() {
-    systemctl stop x-ui
     if [ $# == 0 ]; then
         last_version=$(curl -Ls "https://api.github.com/repos/Misaka-blog/x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
@@ -159,7 +139,7 @@ install_x-ui() {
             exit 1
         fi
         yellow "检测到 x-ui 最新版本：${last_version}，开始安装"
-        wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-${arch}.tar.gz
+        wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz
         if [[ $? -ne 0 ]]; then
             red "下载 x-ui 失败，请确保你的服务器能够连接并下载 Github 的文件"
             rm -f install.sh
@@ -167,27 +147,33 @@ install_x-ui() {
         fi
     else
         last_version=$1
-        url="https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-${arch}.tar.gz"
+        url="https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz"
         yellow "开始安装 x-ui v$1"
-        wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz ${url}
+        wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz ${url}
         if [[ $? -ne 0 ]]; then
             red "下载 x-ui v$1 失败，请确保此版本存在"
             rm -f install.sh
             exit 1
         fi
     fi
-    if [[ -e /usr/local/x-ui/ ]]; then
-        rm -rf /usr/local/x-ui/
-    fi
+
     cd /usr/local/
-    tar zxvf x-ui-linux-${arch}.tar.gz
-    rm x-ui-linux-${arch}.tar.gz -f
+    tar zxvf x-ui-linux-$(archAffix).tar.gz
+    rm -f x-ui-linux-$(archAffix).tar.gz
+
     cd x-ui
-    chmod +x x-ui bin/xray-linux-${arch}
+    chmod +x x-ui bin/xray-linux-$(archAffix)
     cp -f x-ui.service /etc/systemd/system/
-    wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontents.com/Misaka-blog/x-ui/main/x-ui.sh
+
+    wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-ui/main/x-ui.sh -O /usr/bin/x-ui
     chmod +x /usr/local/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
+}
+
+install_xui() {
+    systemctl stop x-ui
+    install_base
+    download_xui $1
     config_panel
     systemctl daemon-reload
     systemctl enable x-ui
@@ -216,6 +202,18 @@ install_x-ui() {
     echo -e ""
 }
 
+show_login_info(){
+    if [[ -n $v4 && -z $v6 ]]; then
+        echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
+        elif [[ -n $v6 && -z $v4 ]]; then
+        echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+        elif [[ -n $v4 && -n $v6 ]]; then
+        echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
+        echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+    fi
+    echo -e "x-ui面板登录用户名：${GREEN}$config_account ${PLAIN}"
+    echo -e "x-ui面板登录密码：${GREEN}$config_password ${PLAIN}"
+}
+
 check_centos8
-install_base
-install_x-ui $1
+install_xui $1
