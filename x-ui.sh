@@ -53,6 +53,15 @@ elif [[ $SYSTEM == "Debian" ]]; then
     fi
 fi
 
+archAffix(){
+    case "$(uname -m)" in
+        x86_64 | x64 | amd64 ) echo 'amd64' ;;
+        armv8 | arm64 | aarch64 ) echo 'arm64' ;;
+        s390x ) echo 's390x' ;;
+        * ) red "不支持的CPU架构！" && exit 1 ;;
+    esac
+}
+
 confirm() {
     if [[ $# > 1 ]]; then
         echo && read -p "$1 [默认$2]: " temp
@@ -62,7 +71,7 @@ confirm() {
     else
         read -p "$1 [y/n]: " temp
     fi
-
+    
     if [[ x"${temp}" == x"y" || x"${temp}" == x"Y" ]]; then
         return 0
     else
@@ -104,7 +113,32 @@ update() {
         fi
         return 0
     fi
-    bash <(curl -Ls https://raw.githubusercontents.com/Misaka-blog/x-ui/master/install.sh)
+    if [[ -e /usr/local/x-ui/ ]]; then
+        rm -rf /usr/local/x-ui/
+    fi
+    
+    last_version=$1
+    url="https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz"
+    yellow "开始安装 x-ui v$1"
+    wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz ${url}
+    if [[ $? -ne 0 ]]; then
+        red "下载 x-ui v$1 失败，请确保此版本存在"
+        rm -f install.sh
+        exit 1
+    fi
+    
+    cd /usr/local/
+    tar zxvf x-ui-linux-$(archAffix).tar.gz
+    rm -f x-ui-linux-$(archAffix).tar.gz
+    
+    cd x-ui
+    chmod +x x-ui bin/xray-linux-$(archAffix)
+    cp -f x-ui.service /etc/systemd/system/
+    
+    wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-ui/main/x-ui.sh -O /usr/bin/x-ui
+    chmod +x /usr/local/x-ui/x-ui.sh
+    chmod +x /usr/bin/x-ui
+    
     if [[ $? == 0 ]]; then
         green "更新完成，已自动重启面板 "
         exit 1
@@ -128,7 +162,7 @@ uninstall() {
     rm /usr/local/x-ui/ -rf
     rm /usr/bin/x-ui -f
     green "x-ui面板已彻底卸载成功！"
-
+    
     if [[ $# == 0 ]]; then
         before_show_menu
     fi
@@ -187,7 +221,7 @@ start() {
             red "x-ui 面板启动失败，可能是因为启动时间超过了两秒，请稍后查看日志信息"
         fi
     fi
-
+    
     if [[ $# == 0 ]]; then
         before_show_menu
     fi
@@ -208,7 +242,7 @@ stop() {
             red "x-ui 面板停止失败，可能是因为停止时间超过了两秒，请稍后使用 x-ui log 查看日志信息"
         fi
     fi
-
+    
     if [[ $# == 0 ]]; then
         before_show_menu
     fi
@@ -242,7 +276,7 @@ enable_xui() {
     else
         red "x-ui 设置开机自启失败"
     fi
-
+    
     if [[ $# == 0 ]]; then
         before_show_menu
     fi
@@ -255,7 +289,7 @@ disable_xui() {
     else
         red "x-ui 取消开机自启失败"
     fi
-
+    
     if [[ $# == 0 ]]; then
         before_show_menu
     fi
@@ -270,7 +304,7 @@ show_log() {
 
 migrate_v2_ui() {
     /usr/local/x-ui/x-ui v2-ui
-
+    
     before_show_menu
 }
 
@@ -346,16 +380,16 @@ check_install() {
 show_status() {
     check_status
     case $? in
-    0)
-        echo -e "面板状态: ${GREEN}已运行${PLAIN}"
-        show_enable_status
+        0)
+            echo -e "面板状态: ${GREEN}已运行${PLAIN}"
+            show_enable_status
         ;;
-    1)
-        echo -e "面板状态: ${YELLOW}未运行${PLAIN}"
-        show_enable_status
+        1)
+            echo -e "面板状态: ${YELLOW}未运行${PLAIN}"
+            show_enable_status
         ;;
-    2)
-        echo -e "面板状态: ${RED}未安装${PLAIN}"
+        2)
+            echo -e "面板状态: ${RED}未安装${PLAIN}"
         ;;
     esac
     show_xray_status
@@ -448,10 +482,10 @@ show_menu() {
  ${GREEN}15.${PLAIN} 一键申请证书 (acme脚本申请)
  ${GREEN}16.${PLAIN} VPS防火墙放开所有网络端口
  ${GREEN}17.${PLAIN} 安装并配置CloudFlare WARP
- "
+    "
     show_status
-    echo && read -p "请输入选择 [0-16]: " num
-
+    echo && read -p "请输入选择 [0-17]: " num
+    
     case "${num}" in
         0) exit 1 ;;
         1) check_uninstall && install ;;
@@ -471,24 +505,24 @@ show_menu() {
         15) wget -N https://raw.githubusercontents.com/Misaka-blog/acme-1key/master/acme1key.sh && bash acme1key.sh ;;
         16) open_ports ;;
         17) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/misakawarp.sh && bash misakawarp.sh ;;
-        *) red "请输入正确的数字 [0-16]" ;;
+        *) red "请输入正确的数字 [0-17]" ;;
     esac
 }
 
 if [[ $# > 0 ]]; then
     case $1 in
-    "start") check_install 0 && start 0 ;;
-    "stop") check_install 0 && stop 0 ;;
-    "restart") check_install 0 && restart 0 ;;
-    "status") check_install 0 && status 0 ;;
-    "enable") check_install 0 && enable_xui 0 ;;
-    "disable") check_install 0 && disable_xui 0 ;;
-    "log") check_install 0 && show_log 0 ;;
-    "v2-ui") check_install 0 && migrate_v2_ui 0 ;;
-    "update") check_install 0 && update 0 ;;
-    "install") check_uninstall 0 && install 0 ;;
-    "uninstall") check_install 0 && uninstall 0 ;;
-    *) show_usage ;;
+        "start") check_install 0 && start 0 ;;
+        "stop") check_install 0 && stop 0 ;;
+        "restart") check_install 0 && restart 0 ;;
+        "status") check_install 0 && status 0 ;;
+        "enable") check_install 0 && enable_xui 0 ;;
+        "disable") check_install 0 && disable_xui 0 ;;
+        "log") check_install 0 && show_log 0 ;;
+        "v2-ui") check_install 0 && migrate_v2_ui 0 ;;
+        "update") check_install 0 && update 0 ;;
+        "install") check_uninstall 0 && install 0 ;;
+        "uninstall") check_install 0 && uninstall 0 ;;
+        *) show_usage ;;
     esac
 else
     show_menu
