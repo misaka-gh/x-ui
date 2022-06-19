@@ -42,9 +42,9 @@ os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
 
 if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
     arch="amd64"
-elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
+    elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
     arch="arm64"
-elif [[ $arch == "s390x" ]]; then
+    elif [[ $arch == "s390x" ]]; then
     arch="s390x"
 else
     echo -e "不支持的CPU架构！脚本将自动退出！"
@@ -58,26 +58,18 @@ if [[ $(getconf WORD_BIT) != '32' ]] && [[ $(getconf LONG_BIT) != '64' ]]; then
     exit -1
 fi
 
-if [[ $SYSTEM == "CentOS" ]]; then
-    if [[ ${os_version} -lt 8 ]]; then
-        echo -e "请使用 CentOS 8 或更高版本的系统！\n" && exit 1
-    fi
-elif [[ $SYSTEM == "Ubuntu" ]]; then
-    if [[ ${os_version} -lt 20 ]]; then
-        echo -e "请使用 Ubuntu 20 或更高版本的系统！\n" && exit 1
-    fi
-elif [[ $SYSTEM == "Debian" ]]; then
-    if [[ ${os_version} -lt 10 ]]; then
-        echo -e "请使用 Debian 10 或更高版本的系统！\n" && exit 1
-    fi
-fi
+[[ $SYSTEM == "CentOS" ]] && [[ ${os_version} -lt 8 ]] && echo -e "请使用 CentOS 8 或更高版本的系统！" && exit 1
+[[ $SYSTEM == "Ubuntu" ]] && [[ ${os_version} -lt 20 ]] && echo -e "请使用 Ubuntu 20 或更高版本的系统！" && exit 1
+[[ $SYSTEM == "Debian" ]] && [[ ${os_version} -lt 10 ]] && echo -e "请使用 Debian 10 或更高版本的系统！" && exit 1
 
-[[ ! $SYSTEM == "CentOS" ]] && ${PACKAGE_UPDATE[int]}
+install_base(){
+    [[ ! $SYSTEM == "CentOS" ]] && ${PACKAGE_UPDATE[int]}
+    
+    [[ -z $(type -P curl) ]] && ${PACKAGE_INSTALL[int]} curl
+    [[ -z $(type -P tar) ]] && ${PACKAGE_INSTALL[int]} tar
+}
 
-[[ -z $(type -P curl) ]] && ${PACKAGE_INSTALL[int]} curl
-[[ -z $(type -P tar) ]] && ${PACKAGE_INSTALL[int]} tar
-
-checkCentOS8(){
+check_centos8(){
     if [[ -n $(cat /etc/os-release | grep "CentOS Linux 8") ]]; then
         yellow "检测到当前VPS系统为CentOS 8，是否升级为CentOS Stream 8以确保软件包正常安装？"
         read -rp "请输入选项 [y/n]：" comfirm
@@ -133,9 +125,9 @@ check_status(){
 show_login_info(){
     if [[ -n $v4 && -z $v6 ]]; then
         echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
-    elif [[ -n $v6 && -z $v4 ]]; then
+        elif [[ -n $v6 && -z $v4 ]]; then
         echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
-    elif [[ -n $v4 && -n $v6 ]]; then
+        elif [[ -n $v4 && -n $v6 ]]; then
         echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
         echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
     fi
@@ -210,6 +202,6 @@ install_x-ui() {
     echo -e ""
 }
 
-checkCentOS8
+check_centos8
 check_status
 install_x-ui $1
