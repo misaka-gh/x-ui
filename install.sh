@@ -41,8 +41,8 @@ cur_dir=$(pwd)
 os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
 
 [[ $SYSTEM == "CentOS" ]] && [[ ${os_version} -lt 7 ]] && echo -e "请使用 CentOS 7 或更高版本的系统！" && exit 1
-[[ $SYSTEM == "Ubuntu" ]] && [[ ${os_version} -lt 20 ]] && echo -e "请使用 Ubuntu 20 或更高版本的系统！" && exit 1
-[[ $SYSTEM == "Debian" ]] && [[ ${os_version} -lt 10 ]] && echo -e "请使用 Debian 10 或更高版本的系统！" && exit 1
+[[ $SYSTEM == "Ubuntu" ]] && [[ ${os_version} -lt 16 ]] && echo -e "请使用 Ubuntu 16 或更高版本的系统！" && exit 1
+[[ $SYSTEM == "Debian" ]] && [[ ${os_version} -lt 9 ]] && echo -e "请使用 Debian 9 或更高版本的系统！" && exit 1
 
 archAffix(){
     case "$(uname -m)" in

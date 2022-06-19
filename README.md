@@ -11,8 +11,8 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-
 ## 建议系统
 
 * CentOS 7+
-* Ubuntu 20+
-* Debian 10+
+* Ubuntu 16+
+* Debian 9+
 
 ## 功能介绍
 
