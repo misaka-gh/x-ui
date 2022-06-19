@@ -150,7 +150,6 @@ show_login_info(){
 }
 
 install_x-ui() {
-    install_base
     systemctl stop x-ui
     if [ $# == 0 ]; then
         last_version=$(curl -Ls "https://api.github.com/repos/Misaka-blog/x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
@@ -218,4 +217,5 @@ install_x-ui() {
 }
 
 check_centos8
+install_base
 install_x-ui $1
