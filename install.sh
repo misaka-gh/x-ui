@@ -200,8 +200,6 @@ install_xui() {
     rm -f install.sh
     green "x-ui v${last_version} 安装完成，面板已启动"
     echo -e ""
-    show_login_info
-    echo -e ""
     echo -e "x-ui 管理脚本使用方法: "
     echo -e "----------------------------------------------"
     echo -e "x-ui              - 显示管理菜单 (功能更多)"
@@ -218,6 +216,7 @@ install_xui() {
     echo -e "x-ui uninstall    - 卸载 x-ui 面板"
     echo -e "----------------------------------------------"
     echo -e ""
+    show_login_info
 }
 
 show_login_info(){
