@@ -37,47 +37,23 @@ done
 
 [[ -z $SYSTEM ]] && red "不支持当前VPS系统，请使用主流的操作系统" && exit 1
 
-arch=$(arch)
+cur_dir=$(pwd)
 os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
 
-if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
-    arch="amd64"
-elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
-    arch="arm64"
-elif [[ $arch == "s390x" ]]; then
-    arch="s390x"
-else
-    echo -e "不支持的CPU架构！脚本将自动退出！"
-    rm -f install.sh
-    exit 1
-fi
+[[ $SYSTEM == "CentOS" ]] && [[ ${os_version} -lt 8 ]] && echo -e "请使用 CentOS 8 或更高版本的系统！" && exit 1
+[[ $SYSTEM == "Ubuntu" ]] && [[ ${os_version} -lt 20 ]] && echo -e "请使用 Ubuntu 20 或更高版本的系统！" && exit 1
+[[ $SYSTEM == "Debian" ]] && [[ ${os_version} -lt 10 ]] && echo -e "请使用 Debian 10 或更高版本的系统！" && exit 1
 
-if [[ $(getconf WORD_BIT) != '32' ]] && [[ $(getconf LONG_BIT) != '64' ]]; then
-    echo "目前x-ui面板不支持 32 位系统(x86)，请使用 64 位系统(x86_64)，如果检测有误，请联系作者"
-    rm -f install.sh
-    exit -1
-fi
+archAffix(){
+    case "$(uname -m)" in
+        x86_64 | x64 | amd64 ) echo 'amd64' ;;
+        armv8 | arm64 | aarch64 ) echo 'arm64' ;;
+        s390x ) echo 's390x' ;;
+        * ) red "不支持的CPU架构！" && rm -f install.sh && exit 1 ;;
+    esac
+}
 
-if [[ $SYSTEM == "CentOS" ]]; then
-    if [[ ${os_version} -lt 8 ]]; then
-        echo -e "请使用 CentOS 8 或更高版本的系统！\n" && exit 1
-    fi
-elif [[ $SYSTEM == "Ubuntu" ]]; then
-    if [[ ${os_version} -lt 20 ]]; then
-        echo -e "请使用 Ubuntu 20 或更高版本的系统！\n" && exit 1
-    fi
-elif [[ $SYSTEM == "Debian" ]]; then
-    if [[ ${os_version} -lt 10 ]]; then
-        echo -e "请使用 Debian 10 或更高版本的系统！\n" && exit 1
-    fi
-fi
-
-[[ ! $SYSTEM == "CentOS" ]] && ${PACKAGE_UPDATE[int]}
-
-[[ -z $(type -P curl) ]] && ${PACKAGE_INSTALL[int]} curl
-[[ -z $(type -P tar) ]] && ${PACKAGE_INSTALL[int]} tar
-
-checkCentOS8(){
+check_centos8(){
     if [[ -n $(cat /etc/os-release | grep "CentOS Linux 8") ]]; then
         yellow "检测到当前VPS系统为CentOS 8，是否升级为CentOS Stream 8以确保软件包正常安装？"
         read -rp "请输入选项 [y/n]：" comfirm
@@ -94,25 +70,8 @@ checkCentOS8(){
     fi
 }
 
-config_after_install() {
-    yellow "出于安全考虑，安装/更新完成后需要强制修改端口与账户密码"
-    read -rp "确认是否继续 [Y/N]: " yn
-    if [[ $yn =~ "Y"|"y" ]]; then
-        read -rp "请设置您的账户名 [默认随机用户名]：" config_account
-        [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8)
-        read -rp "请设置您的账户密码 [默认随机密码]：" config_password
-        [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
-        read -rp "请设置面板访问端口 [默认随机端口]：" config_port
-        [[ -z $config_port ]] && config_port=$(echo $RANDOM) && yellow "未设置端口，将使用随机端口号：$config_port"
-        /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
-        /usr/local/x-ui/x-ui setting -port ${config_port}
-    else
-        red "已取消配置过程，将使用默认配置！"
-        config_port=54321
-    fi
-}
-
 check_status(){
+    yellow "正在检查VPS系统配置环境，请稍等..."
     WgcfIPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfIPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     if [[ $WgcfIPv4Status =~ "on"|"plus" ]] || [[ $WgcfIPv6Status =~ "on"|"plus" ]]; then
@@ -130,21 +89,49 @@ check_status(){
     fi
 }
 
-show_login_info(){
-    if [[ -n $v4 && -z $v6 ]]; then
-        echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
-    elif [[ -n $v6 && -z $v4 ]]; then
-        echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
-    elif [[ -n $v4 && -n $v6 ]]; then
-        echo -e "x-ui面板的IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
-        echo -e "x-ui面板的IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+config_panel() {
+    yellow "出于安全考虑，安装/更新完成后需要强制修改端口与账户密码"
+    read -rp "确认是否继续 [Y/N]: " yn
+    if [[ $yn =~ "Y"|"y" ]]; then
+        read -rp "请设置您的账户名 [默认随机用户名]：" config_account
+        [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8)
+        read -rp "请设置您的账户密码 [默认随机密码]：" config_password
+        [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
+        read -rp "请设置面板访问端口 [默认随机端口]：" config_port
+        [[ -z $config_port ]] && config_port=$(echo $RANDOM) && yellow "未设置端口，将使用随机端口号：$config_port"
+        /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
+        /usr/local/x-ui/x-ui setting -port ${config_port}
+    else
+        red "已取消配置端口与账户密码，将使用默认的配置！"
+        config_account="admin"
+        config_password="admin"
+        config_port=54321
     fi
-    echo -e "x-ui面板登录用户名：${GREEN}$config_account ${PLAIN}"
-    echo -e "x-ui面板登录密码：${GREEN}$config_password ${PLAIN}"
 }
 
-install_x-ui() {
-    systemctl stop x-ui
+install_base(){
+    if [[ ! $SYSTEM == "CentOS" ]]; then
+        ${PACKAGE_UPDATE[int]}
+    fi
+    
+    if [[ -z $(type -P curl) ]]; then
+        yellow "检测curl未安装，正在安装中..."
+        ${PACKAGE_INSTALL[int]} curl
+    fi
+
+    if [[ -z $(type -P tar) ]]; then
+        yellow "检测tar未安装，正在安装中..."
+        ${PACKAGE_INSTALL[int]} tar
+    fi
+
+    check_status
+}
+
+download_xui(){
+    if [[ -e /usr/local/x-ui/ ]]; then
+        rm -rf /usr/local/x-ui/
+    fi
+
     if [ $# == 0 ]; then
         last_version=$(curl -Ls "https://api.github.com/repos/Misaka-blog/x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
@@ -153,7 +140,7 @@ install_x-ui() {
             exit 1
         fi
         yellow "检测到 x-ui 最新版本：${last_version}，开始安装"
-        wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-${arch}.tar.gz
+        wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz
         if [[ $? -ne 0 ]]; then
             red "下载 x-ui 失败，请确保你的服务器能够连接并下载 Github 的文件"
             rm -f install.sh
@@ -161,32 +148,41 @@ install_x-ui() {
         fi
     else
         last_version=$1
-        url="https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-${arch}.tar.gz"
+        url="https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz"
         yellow "开始安装 x-ui v$1"
-        wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz ${url}
+        wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz ${url}
         if [[ $? -ne 0 ]]; then
             red "下载 x-ui v$1 失败，请确保此版本存在"
             rm -f install.sh
             exit 1
         fi
     fi
-    if [[ -e /usr/local/x-ui/ ]]; then
-        rm -rf /usr/local/x-ui/
-    fi
+
     cd /usr/local/
-    tar zxvf x-ui-linux-${arch}.tar.gz
-    rm x-ui-linux-${arch}.tar.gz -f
+    tar zxvf x-ui-linux-$(archAffix).tar.gz
+    rm -f x-ui-linux-$(archAffix).tar.gz
+
     cd x-ui
-    chmod +x x-ui bin/xray-linux-${arch}
+    chmod +x x-ui bin/xray-linux-$(archAffix)
     cp -f x-ui.service /etc/systemd/system/
-    wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontents.com/Misaka-blog/x-ui/main/x-ui.sh
+
+    wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-ui/main/x-ui.sh -O /usr/bin/x-ui
     chmod +x /usr/local/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
-    config_after_install
+}
+
+install_xui() {
+    systemctl stop x-ui
+
+    install_base
+    download_xui $1
+    config_panel
+
     systemctl daemon-reload
     systemctl enable x-ui
     systemctl start x-ui
-    cd /root
+
+    cd $cur_dir
     rm -f install.sh
     green "x-ui v${last_version} 安装完成，面板已启动"
     echo -e ""
@@ -210,6 +206,18 @@ install_x-ui() {
     echo -e ""
 }
 
-checkCentOS8
-check_status
-install_x-ui $1
+show_login_info(){
+    if [[ -n $v4 && -z $v6 ]]; then
+        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
+    elif [[ -n $v6 && -z $v4 ]]; then
+        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+    elif [[ -n $v4 && -n $v6 ]]; then
+        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
+        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+    fi
+    echo -e "登录用户名：${GREEN}$config_account ${PLAIN}"
+    echo -e "登录密码：${GREEN}$config_password ${PLAIN}"
+}
+
+check_centos8
+install_xui $1
