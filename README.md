@@ -29,7 +29,13 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-
 * 支持 amd64、arm64、s390x CPU架构的VPS
 * 支持 Telegram Bot 提醒面板，SSH登录信息、流量使用情况
 
-# 感谢列表
+## 常见问题
+
+1. 关于SS2022无法启动，面板提示error情况
+
+详细见 https://github.com/Misaka-blog/x-ui/issues/15
+
+## 感谢列表
 
 X-ui 原作：https://github.com/vaxilu/x-ui
 
