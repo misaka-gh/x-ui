@@ -39,19 +39,9 @@ done
 
 os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
 
-if [[ $SYSTEM == "CentOS" ]]; then
-    if [[ ${os_version} -lt 7 ]]; then
-        red "请使用 CentOS 7 或更高版本的系统！\n" && exit 1
-    fi
-elif [[ $SYSTEM == "Ubuntu" ]]; then
-    if [[ ${os_version} -lt 16 ]]; then
-        red "请使用 Ubuntu 16 或更高版本的系统！\n" && exit 1
-    fi
-elif [[ $SYSTEM == "Debian" ]]; then
-    if [[ ${os_version} -lt 9 ]]; then
-        red "请使用 Debian 9 或更高版本的系统！\n" && exit 1
-    fi
-fi
+[[ $SYSTEM == "CentOS" && ${os_version} -lt 7 ]] && echo -e "请使用 CentOS 7 或更高版本的系统！" && exit 1
+[[ $SYSTEM == "Ubuntu" && ${os_version} -lt 16 ]] && echo -e "请使用 Ubuntu 16 或更高版本的系统！" && exit 1
+[[ $SYSTEM == "Debian" && ${os_version} -lt 9 ]] && echo -e "请使用 Debian 9 或更高版本的系统！" && exit 1
 
 archAffix(){
     case "$(uname -m)" in
