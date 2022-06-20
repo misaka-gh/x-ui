@@ -168,11 +168,7 @@ uninstall() {
     rm /etc/x-ui/ -rf
     rm /usr/local/x-ui/ -rf
     rm /usr/bin/x-ui -f
-    green "x-ui面板已彻底卸载成功！"
-    
-    if [[ $# == 0 ]]; then
-        before_show_menu
-    fi
+    green "x-ui面板已彻底卸载成功"
 }
 
 reset_user() {
