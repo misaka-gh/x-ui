@@ -96,6 +96,14 @@ config_panel() {
     [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
     read -rp "请设置面板访问端口 [默认随机端口]：" config_port
     [[ -z $config_port ]] && config_port=$(shuf -i 1000-65535 -n 1)
+    if [[ -n $(netstat -ntlp | grep "$config_port") ]]; then
+        until [[ -z $(netstat -ntlp | grep "$config_port") ]]; do
+            if [[ -n $(netstat -ntlp | grep "$config_port") ]]; then
+                yellow "你设置的端口目前已被占用，请重新设置端口"
+                read -rp "请设置面板访问端口 [默认随机端口]：" config_port
+            fi
+        done
+    fi
     /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
     /usr/local/x-ui/x-ui setting -port ${config_port}
 }

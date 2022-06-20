@@ -203,6 +203,14 @@ set_port() {
         yellow "已取消"
         before_show_menu
     else
+        if [[ -n $(netstat -ntlp | grep "$port") ]]; then
+            until [[ -z $(netstat -ntlp | grep "$port") ]]; do
+                if [[ -n $(netstat -ntlp | grep "$port") ]]; then
+                    yellow "你设置的端口目前已被占用，请重新设置端口"
+                    echo -n -e "输入端口号[1-65535]: " && read port
+                fi
+            done
+        fi
         /usr/local/x-ui/x-ui setting -port ${port}
         echo -e "设置端口完毕，请重启面板并使用新设置的端口 ${GREEN}${port}${PLAIN} 访问面板"
         confirm_restart
@@ -475,7 +483,7 @@ show_login_info(){
             echo -e "nameserver 2a01:4f8:c2c:123f::1" > /etc/resolv.conf
         fi
     fi
-
+    
     config_port=$(/usr/local/x-ui/x-ui 2>&1 | grep tcp | awk '{print $5}' | sed "s/://g")
     if [[ -n $v4 && -z $v6 ]]; then
         echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
