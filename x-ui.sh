@@ -445,26 +445,6 @@ open_ports(){
     green "VPS中的所有网络端口已开启"
 }
 
-ss2022_pwd_generate(){
-    yellow "请选择你使用的SS 2022协议："
-    echo -e " ${GREEN}1.${PLAIN} 2022-blake3-aes-128-gcm"
-    echo -e " ${GREEN}2.${PLAIN} 2022-blake3-aes-256-gcm / 2022-blake3-chacha20-poly1305"
-    read -rp "请输入选择 [1-2]: " ss2022_protocol
-    case $ss2022_protocol in
-        1)
-            ss2022_pwd=$(openssl rand -base64 16)
-            echo -e "生成的SS 2022密码为：${GREEN} $ss2022_pwd ${PLAIN}"
-        ;;
-        2)
-            ss2022_pwd=$(openssl rand -base64 32)
-            echo -e "生成的SS 2022密码为：${GREEN} $ss2022_pwd ${PLAIN}"
-        ;;
-        *)
-            red "未选择协议，退出SS 2022密码生成"
-        ;;
-    esac
-}
-
 show_usage() {
     echo "x-ui 管理脚本使用方法: "
     echo "------------------------------------------"
@@ -537,12 +517,11 @@ show_menu() {
  ${GREEN}15.${PLAIN} 一键申请证书 (acme脚本申请)
  ${GREEN}16.${PLAIN} VPS防火墙放开所有网络端口
  ${GREEN}17.${PLAIN} 安装并配置CloudFlare WARP
- ${GREEN}18.${PLAIN} 自动生成SS 2022协议密码
     "
     show_status
     echo ""
     show_login_info
-    echo && read -rp "请输入选择 [0-18]: " num
+    echo && read -rp "请输入选择 [0-17]: " num
     
     case "${num}" in
         0) exit 1 ;;
@@ -563,8 +542,7 @@ show_menu() {
         15) wget -N https://raw.githubusercontents.com/Misaka-blog/acme-1key/master/acme1key.sh && bash acme1key.sh ;;
         16) open_ports ;;
         17) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/misakawarp.sh && bash misakawarp.sh ;;
-        18) ss2022_pwd_generate ;;
-        *) red "请输入正确的数字 [0-18]" ;;
+        *) red "请输入正确的数字 [0-17]" ;;
     esac
 }
 
