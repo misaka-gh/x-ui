@@ -144,7 +144,7 @@ update() {
         systemctl enable x-ui
         systemctl start x-ui
         
-        green "更新完成，已自动重启面板 "
+        green "更新完成，已自动重启x-ui面板 "
         exit 1
     else
         red "已取消升级x-ui面板"
