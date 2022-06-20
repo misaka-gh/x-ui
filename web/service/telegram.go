@@ -51,7 +51,7 @@ func (s *TelegramService) GetsystemStatus() string {
 		status += fmt.Sprintf("运行时间:%s\r\n", common.FormatTime(upTime))
 	}
 	//xray version
-	status += fmt.Sprintf("xray版本:%s\r\n", s.xrayService.GetXrayVersion())
+	status += fmt.Sprintf("xray内核版本:%s\r\n", s.xrayService.GetXrayVersion())
 	//ip address
 	var ip string
 	netInterfaces, err := net.Interfaces()
@@ -141,71 +141,73 @@ func (s *TelegramService) StartRun() {
 			inboundPortStr := update.Message.CommandArguments()
 			inboundPortValue, err := strconv.Atoi(inboundPortStr)
 			if err != nil {
-				msg.Text = "Invalid inbound port,please check it"
+				msg.Text = "无效的入站端口，请检查"
 			}
 			//logger.Infof("Will delete port:%d inbound", inboundPortValue)
 			error := s.inboundService.DelInboundByPort(inboundPortValue)
 			if error != nil {
-				msg.Text = fmt.Sprintf("delete inbound whoes port is %d failed", inboundPortValue)
+				msg.Text = fmt.Sprintf("删除端口为 %d 的节点失败", inboundPortValue)
 			} else {
-				msg.Text = fmt.Sprintf("delete inbound whoes port is %d success", inboundPortValue)
+				msg.Text = fmt.Sprintf("已成功删除端口为 %d 的节点", inboundPortValue)
 			}
 		case "restart":
 			err := s.xrayService.RestartXray(true)
 			if err != nil {
-				msg.Text = fmt.Sprintln("Restart xray failed,error:", err)
+				msg.Text = fmt.Sprintln("重启xray核心失败, err: ", err)
 			} else {
-				msg.Text = "Restart xray success"
+				msg.Text = "已成功重启xray核心"
 			}
 		case "disable":
 			inboundPortStr := update.Message.CommandArguments()
 			inboundPortValue, err := strconv.Atoi(inboundPortStr)
 			if err != nil {
-				msg.Text = "Invalid inbound port,please check it"
+				msg.Text = "无效的入站端口，请检查"
 			}
 			//logger.Infof("Will delete port:%d inbound", inboundPortValue)
 			error := s.inboundService.DisableInboundByPort(inboundPortValue)
 			if error != nil {
-				msg.Text = fmt.Sprintf("disable inbound whoes port is %d failed,err:%s", inboundPortValue, error)
+				msg.Text = fmt.Sprintf("禁用端口为 %d 的节点失败, err: %s", inboundPortValue, error)
 			} else {
-				msg.Text = fmt.Sprintf("disable inbound whoes port is %d success", inboundPortValue)
+				msg.Text = fmt.Sprintf("已成功禁用端口为 %d 的节点", inboundPortValue)
 			}
 		case "enable":
 			inboundPortStr := update.Message.CommandArguments()
 			inboundPortValue, err := strconv.Atoi(inboundPortStr)
 			if err != nil {
-				msg.Text = "Invalid inbound port,please check it"
+				msg.Text = "无效的入站端口，请检查"
 			}
 			//logger.Infof("Will delete port:%d inbound", inboundPortValue)
 			error := s.inboundService.EnableInboundByPort(inboundPortValue)
 			if error != nil {
-				msg.Text = fmt.Sprintf("enable inbound whoes port is %d failed,err:%s", inboundPortValue, error)
+				msg.Text = fmt.Sprintf("尝试启用端口为 %d 的节点失败, err: %s", inboundPortValue, error)
 			} else {
-				msg.Text = fmt.Sprintf("enable inbound whoes port is %d success", inboundPortValue)
+				msg.Text = fmt.Sprintf("已成功启用端口为 %d 的节点", inboundPortValue)
 			}
 		case "version":
 			versionStr := update.Message.CommandArguments()
 			currentVersion, _ := s.serverService.GetXrayVersions()
 			if currentVersion[0] == versionStr {
-				msg.Text = fmt.Sprintf("can't change same version to %s", versionStr)
+				msg.Text = fmt.Sprintf("xray内核不能更新和本地一样的版本", versionStr)
 			}
 			error := s.serverService.UpdateXray(versionStr)
 			if error != nil {
-				msg.Text = fmt.Sprintf("change version to %s failed,err:%s", versionStr, error)
+				msg.Text = fmt.Sprintf("xray内核版本升级为 %s 失败, err: %s", versionStr, error)
 			} else {
-				msg.Text = fmt.Sprintf("change version to %s  success", versionStr)
+				msg.Text = fmt.Sprintf("xray内核版本升级为 %s 成功", versionStr)
 			}
 		case "status":
 			msg.Text = s.GetsystemStatus()
 		default:
 			//NOTE:here we need string as a new line each one,we should use ``
-			msg.Text = `/delete will help you delete inbound according port
-/restart will restart xray,this command will not restart x-ui
-/status will get current system info
-/enable will enable inbound according port
-/disable will disable inbound according port
-/version will change xray version to specific one
-You can input /help to see more commands`
+			msg.Text = `Misaka x-ui 魔改优化版 Telegram Bot 使用说明
+/help 获取bot的帮助信息 (此菜单)
+/delete [port] 删除对应端口的节点
+/restart 重启xray内核
+/status 获取当前系统状态
+/enable [port] 开启对应端口的节点
+/disable [port] 关闭对应端口的节点
+/version [version] 将会升级xray内核到 [version] 版本
+`
 		}
 
 		if _, err := botInstace.Send(msg); err != nil {
