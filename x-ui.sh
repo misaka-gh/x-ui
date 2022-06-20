@@ -235,7 +235,7 @@ start() {
         if [[ $? == 0 ]]; then
             green "x-ui 面板启动成功"
         else
-            red "x-ui 面板启动失败，可能是因为启动时间超过了两秒，请稍后查看日志信息"
+            red "x-ui 面板启动失败，请稍后使用 x-ui log 查看日志信息"
         fi
     fi
     
@@ -256,7 +256,7 @@ stop() {
         if [[ $? == 1 ]]; then
             green "x-ui 与 xray 停止成功"
         else
-            red "x-ui 面板停止失败，可能是因为停止时间超过了两秒，请稍后使用 x-ui log 查看日志信息"
+            red "x-ui 面板停止失败，请稍后使用 x-ui log 查看日志信息"
         fi
     fi
     
@@ -272,7 +272,7 @@ restart() {
     if [[ $? == 0 ]]; then
         green "x-ui 与 xray 重启成功"
     else
-        red "x-ui 面板重启失败，可能是因为启动时间超过了两秒，请稍后使用 x-ui log 查看日志信息"
+        red "x-ui 面板重启失败，请稍后使用 x-ui log 查看日志信息"
     fi
     if [[ $# == 0 ]]; then
         before_show_menu
@@ -433,7 +433,7 @@ check_xray_status() {
 show_xray_status() {
     check_xray_status
     if [[ $? == 0 ]]; then
-        echo -e "xray 状态: ${GREEN}运行${PLAIN}"
+        echo -e "xray 状态: ${GREEN}运行中${PLAIN}"
     else
         echo -e "xray 状态: ${RED}未运行${PLAIN}"
     fi
