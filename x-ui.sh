@@ -556,7 +556,7 @@ if [[ $# > 0 ]]; then
         "disable") check_install 0 && disable_xui 0 ;;
         "log") check_install 0 && show_log 0 ;;
         "v2-ui") check_install 0 && migrate_v2_ui 0 ;;
-        "update") check_install 0 && update 0 ;;
+        "update") check_install 0 && update ;;
         "install") check_uninstall 0 && install 0 ;;
         "uninstall") check_install 0 && uninstall 0 ;;
         *) show_usage ;;
