@@ -96,14 +96,12 @@ config_panel() {
     [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
     read -rp "请设置面板访问端口 [默认随机端口]：" config_port
     [[ -z $config_port ]] && config_port=$(shuf -i 1000-65535 -n 1)
-    if [[ -n $(netstat -ntlp | grep "$config_port") ]]; then
-        until [[ -z $(netstat -ntlp | grep "$config_port") ]]; do
-            if [[ -n $(netstat -ntlp | grep "$config_port") ]]; then
-                yellow "你设置的端口目前已被占用，请重新设置端口"
-                read -rp "请设置面板访问端口 [默认随机端口]：" config_port
-            fi
-        done
-    fi
+    until [[ -z $(ss -ntlp | awk '{print $4}' | grep -w "$config_port") ]]; do
+        if [[ -n $(ss -ntlp | awk '{print $4}' | grep -w  "$config_port") ]]; then
+            yellow "你设置的端口目前已被占用，请重新设置端口"
+            read -rp "请设置面板访问端口 [默认随机端口]：" config_port
+        fi
+    done
     /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password} >/dev/null 2>&1
     /usr/local/x-ui/x-ui setting -port ${config_port} >/dev/null 2>&1
 }
@@ -222,9 +220,9 @@ install_xui() {
 show_login_info(){
     if [[ -n $v4 && -z $v6 ]]; then
         echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
-    elif [[ -n $v6 && -z $v4 ]]; then
+        elif [[ -n $v6 && -z $v4 ]]; then
         echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
-    elif [[ -n $v4 && -n $v6 ]]; then
+        elif [[ -n $v4 && -n $v6 ]]; then
         echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
         echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
     fi
