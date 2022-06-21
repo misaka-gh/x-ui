@@ -478,10 +478,6 @@ show_login_info(){
     else
         v6=`curl -s6m8 https://ip.gs -k`
         v4=`curl -s4m8 https://ip.gs -k`
-        if [[ -z $v4 && -n $v6 ]]; then
-            yellow "检测到为纯IPv6 VPS，已自动添加DNS64解析服务器"
-            echo -e "nameserver 2a01:4f8:c2c:123f::1" > /etc/resolv.conf
-        fi
     fi
     
     config_port=$(/usr/local/x-ui/x-ui 2>&1 | grep tcp | awk '{print $5}' | sed "s/://g")
