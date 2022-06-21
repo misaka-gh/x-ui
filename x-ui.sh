@@ -141,7 +141,7 @@ update() {
         chmod +x /usr/bin/x-ui
         
         systemctl daemon-reload
-        systemctl enable x-ui
+        systemctl enable x-ui >/dev/null 2>&1
         systemctl start x-ui
         
         green "更新完成，已自动重启x-ui面板 "
@@ -179,7 +179,7 @@ reset_user() {
         fi
         return 0
     fi
-    /usr/local/x-ui/x-ui setting -username admin -password admin
+    /usr/local/x-ui/x-ui setting -username admin -password admin >/dev/null 2>&1
     echo -e "面板用户名和密码已重置为 ${GREEN}admin${PLAIN}，现在请重启面板"
     confirm_restart
 }
@@ -192,7 +192,7 @@ reset_config() {
         fi
         return 0
     fi
-    /usr/local/x-ui/x-ui setting -reset
+    /usr/local/x-ui/x-ui setting -reset >/dev/null 2>&1
     echo -e "所有面板设置已重置为默认值，请重启面板并使用默认的 ${GREEN}54321${PLAIN} 端口访问面板"
     confirm_restart
 }
@@ -200,7 +200,7 @@ reset_config() {
 set_port() {
     echo && echo -n -e "输入端口号[1-65535]: " && read port
     if [[ -z "${port}" ]]; then
-        yellow "已取消"
+        red "已取消设置端口!"
         before_show_menu
     else
         if [[ -n $(netstat -ntlp | grep "$port") ]]; then
@@ -211,7 +211,7 @@ set_port() {
                 fi
             done
         fi
-        /usr/local/x-ui/x-ui setting -port ${port}
+        /usr/local/x-ui/x-ui setting -port ${port} >/dev/null 2>&1
         echo -e "设置端口完毕，请重启面板并使用新设置的端口 ${GREEN}${port}${PLAIN} 访问面板"
         confirm_restart
     fi

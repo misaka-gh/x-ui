@@ -104,8 +104,8 @@ config_panel() {
             fi
         done
     fi
-    /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
-    /usr/local/x-ui/x-ui setting -port ${config_port}
+    /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password} >/dev/null 2>&1
+    /usr/local/x-ui/x-ui setting -port ${config_port} >/dev/null 2>&1
 }
 
 install_base(){
@@ -186,14 +186,14 @@ info_bar(){
 install_xui() {
     info_bar
     
-    systemctl stop x-ui
+    systemctl stop x-ui >/dev/null 2>&1
     
     install_base
     download_xui $1
     config_panel
     
     systemctl daemon-reload
-    systemctl enable x-ui
+    systemctl enable x-ui >/dev/null 2>&1
     systemctl start x-ui
     
     cd $cur_dir
