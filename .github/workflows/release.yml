@@ -41,8 +41,8 @@ jobs:
           cd x-ui
           mv xui-release x-ui
           mkdir bin
-          cd binlatestXray=v$(curl -Ls "https://data.jsdelivr.com/v1/package/resolve/gh/XTLS/Xray-core" | grep '"version":' | sed -E 's/.*"([^"]+)".*/\1/')
-          wget https://github.com/XTLS/Xray-core/releases/download/$latestXray/Xray-linux-64.zip
+          cd bin
+          wget https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip
           unzip Xray-linux-64.zip
           rm -f Xray-linux-64.zip
           mv xray xray-linux-amd64
@@ -85,8 +85,7 @@ jobs:
           mv xui-release x-ui
           mkdir bin
           cd bin
-          latestXray=v$(curl -Ls "https://data.jsdelivr.com/v1/package/resolve/gh/XTLS/Xray-core" | grep '"version":' | sed -E 's/.*"([^"]+)".*/\1/')
-          wget https://github.com/XTLS/Xray-core/releases/download/$latestXray/Xray-linux-arm64-v8a.zip
+          wget https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-arm64-v8a.zip
           unzip Xray-linux-arm64-v8a.zip
           rm -f Xray-linux-arm64-v8a.zip
           mv xray xray-linux-arm64
@@ -129,8 +128,7 @@ jobs:
           mv xui-release x-ui
           mkdir bin
           cd bin
-          latestXray=v$(curl -Ls "https://data.jsdelivr.com/v1/package/resolve/gh/XTLS/Xray-core" | grep '"version":' | sed -E 's/.*"([^"]+)".*/\1/')
-          wget https://github.com/XTLS/Xray-core/releases/download/$latestXray/Xray-linux-s390x.zip
+          wget https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-s390x.zip
           unzip Xray-linux-s390x.zip
           rm -f Xray-linux-s390x.zip geoip.dat geosite.dat
           wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
