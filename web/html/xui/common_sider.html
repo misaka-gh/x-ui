@@ -5,7 +5,7 @@
 </a-menu-item>
 <a-menu-item key="{{ .base_path }}xui/inbounds">
     <a-icon type="user"></a-icon>
-    <span>入站列表</span>
+    <span>入站列表</span>a
 </a-menu-item>
 <a-menu-item key="{{ .base_path }}xui/setting">
     <a-icon type="setting"></a-icon>
@@ -15,7 +15,15 @@
     <template slot="title">
         <a-icon type="link"></a-icon>
         <span>其他</span>
-    </template>  
+    </template> 
+    <a-menu-item key="https://owo.misaka.rest/x-ui/">
+        <a-icon type="link"></a-icon>
+        <span>使用教程</span>
+    </a-menu-item>
+    <a-menu-item key="https://owo.misaka.rest/">
+        <a-icon type="home"></a-icon>
+        <span>博客主页</span>
+    </a-menu-item>
     <a-menu-item key="https://github.com/Misaka-blog/x-ui/">
         <a-icon type="github"></a-icon>
         <span>GitHub 项目</span>
@@ -27,10 +35,6 @@
     <a-menu-item key="https://bitbucket.org/misakano7545/xui/src/main/">
         <a-icon type="project"></a-icon>
         <span>BitBucket 项目</span>
-    </a-menu-item>
-    <a-menu-item key="https://owo.misaka.rest/">
-        <a-icon type="home"></a-icon>
-        <span>博客主页</span>
     </a-menu-item>
 </a-sub-menu>
 <a-menu-item key="{{ .base_path }}logout">
