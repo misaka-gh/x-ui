@@ -173,6 +173,7 @@ download_xui(){
 }
 
 info_bar(){
+    clear
     echo "#############################################################"
     echo -e "#                   ${RED}Misaka x-ui 魔改优化版${PLAIN}                  #"
     echo -e "# ${GREEN}作者${PLAIN}: vaxilu, FranzKafkaYu, Misaka No                     #"
