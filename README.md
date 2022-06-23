@@ -4,6 +4,8 @@
 
 博客说明：https://owo.misaka.rest/misakablog-xui/
 
+x-ui教程：https://owo.misaka.rest/x-ui/
+
 ## 安装命令
 
 ```shell
@@ -58,12 +60,6 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-
 ![](https://gcore.jsdelivr.net/gh/Misaka-blog/tuchuang@master/20220420235233.png)
 
 > Crontab表达式生成器：https://cron.qqe2.com/
-
-## 常见问题
-
-1. 关于SS2022无法启动，面板提示error情况
-
-详细见 https://github.com/Misaka-blog/x-ui/issues/15
 
 ## 感谢列表
 
