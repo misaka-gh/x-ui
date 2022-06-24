@@ -176,7 +176,7 @@ uninstall() {
 }
 
 reset_user() {
-    confirm "确定要重置面板用户名和密码吗" "n"
+    confirm "确定要重置面板用户名和密码吗?" "n"
     if [[ $? != 0 ]]; then
         if [[ $# == 0 ]]; then
             show_menu
@@ -188,9 +188,9 @@ reset_user() {
     read -rp "请设置您的账户密码 [默认随机密码]：" config_password
     [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
     /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password} >/dev/null 2>&1
-    echo -e "面板用户名已重置为： ${GREEN} ${config_account} ${PLAIN}"
-    echo -e "面板密码已重置为： ${GREEN} ${config_password} ${PLAIN}"
-    green "请使用新的用户名、密码访问x-ui面板"
+    echo -e "面板用户名已重置为: ${GREEN} ${config_account} ${PLAIN}"
+    echo -e "面板密码已重置为: ${GREEN} ${config_password} ${PLAIN}"
+    green "请使用新的用户名、密码登录x-ui面板"
     confirm_restart
 }
 
