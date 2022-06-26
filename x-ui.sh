@@ -181,9 +181,9 @@ reset_user() {
         fi
         return 0
     fi
-    read -rp "请设置您的账户名 [默认随机用户名]：" config_account
+    read -rp "请设置您的用户名 [默认随机用户名]: " config_account
     [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8)
-    read -rp "请设置您的账户密码 [默认随机密码]：" config_password
+    read -rp "请设置您的密码 [默认随机密码]: " config_password
     [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
     /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password} >/dev/null 2>&1
     echo -e "面板用户名已重置为: ${GREEN} ${config_account} ${PLAIN}"
@@ -474,7 +474,7 @@ show_usage() {
 }
 
 check_login_info(){
-    yellow "正在检查VPS系统配置环境，请稍等..."
+    yellow "正在检查VPS系统及x-ui面板配置, 请稍等..."
 
     WgcfIPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfIPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -521,12 +521,12 @@ show_menu() {
     show_status
     echo ""
     if [[ -n $v4 && -z $v6 ]]; then
-        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
+        echo -e "面板IPv4登录地址为: ${GREEN}http://$v4:$config_port ${PLAIN}"
     elif [[ -n $v6 && -z $v4 ]]; then
-        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+        echo -e "面板IPv6登录地址为: ${GREEN}http://[$v6]:$config_port ${PLAIN}"
     elif [[ -n $v4 && -n $v6 ]]; then
-        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
-        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+        echo -e "面板IPv4登录地址为: ${GREEN}http://$v4:$config_port ${PLAIN}"
+        echo -e "面板IPv6登录地址为: ${GREEN}http://[$v6]:$config_port ${PLAIN}"
     fi
     echo && read -rp "请输入选择 [0-17]: " num
     

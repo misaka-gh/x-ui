@@ -51,22 +51,22 @@ archAffix(){
         x86_64 | x64 | amd64 ) echo 'amd64' ;;
         armv8 | arm64 | aarch64 ) echo 'arm64' ;;
         s390x ) echo 's390x' ;;
-        * ) red "不支持的CPU架构！" && rm -f install.sh && exit 1 ;;
+        * ) red "不支持的CPU架构! " && rm -f install.sh && exit 1 ;;
     esac
 }
 
 check_centos8(){
     if [[ -n $(cat /etc/os-release | grep "CentOS Linux 8") ]]; then
-        yellow "检测到当前VPS系统为CentOS 8，是否升级为CentOS Stream 8以确保软件包正常安装？"
-        read -rp "请输入选项 [y/n]：" comfirm
-        if [[ $comfirm == "y" ]]; then
-            yellow "正在为你升级到CentOS Stream 8，大概需要10-30分钟的时间"
+        yellow "检测到当前VPS系统为CentOS 8, 是否升级为CentOS Stream 8以确保软件包正常安装?"
+        read -rp "请输入选项 [y/n]: " comfirm
+        if [[ $comfirm =~ "y"|"Y" ]]; then
+            yellow "正在为你升级到CentOS Stream 8, 大概需要10-30分钟的时间"
             sleep 1
             sed -i -e "s|releasever|releasever-stream|g" /etc/yum.repos.d/CentOS-*
             yum clean all && yum makecache
             dnf swap centos-linux-repos centos-stream-repos distro-sync -y
         else
-            red "已取消升级过程，脚本即将退出！"
+            red "已取消升级过程, 脚本即将退出！"
             exit 1
         fi
     fi
@@ -84,7 +84,7 @@ check_status(){
         v6=`curl -s6m8 https://ip.gs -k`
         v4=`curl -s4m8 https://ip.gs -k`
         if [[ -z $v4 && -n $v6 ]]; then
-            yellow "检测到为纯IPv6 VPS，已自动添加DNS64解析服务器"
+            yellow "检测到为纯IPv6 VPS, 已自动添加DNS64解析服务器"
             echo -e "nameserver 2a01:4f8:c2c:123f::1" > /etc/resolv.conf
         fi
     fi
@@ -92,16 +92,16 @@ check_status(){
 
 config_panel() {
     yellow "出于安全考虑，安装/更新完成后需要强制修改端口与账户密码"
-    read -rp "请设置您的账户名 [默认随机用户名]：" config_account
+    read -rp "请设置您的用户名 [默认随机用户名]: " config_account
     [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8)
-    read -rp "请设置您的账户密码 [默认随机密码]：" config_password
+    read -rp "请设置您的密码 [默认随机密码]: " config_password
     [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
-    read -rp "请设置面板访问端口 [默认随机端口]：" config_port
+    read -rp "请设置面板访问端口 [默认随机端口]: " config_port
     [[ -z $config_port ]] && config_port=$(shuf -i 1000-65535 -n 1)
     until [[ -z $(ss -ntlp | awk '{print $4}' | grep -w "$config_port") ]]; do
         if [[ -n $(ss -ntlp | awk '{print $4}' | grep -w  "$config_port") ]]; then
             yellow "你设置的端口目前已被占用，请重新设置端口"
-            read -rp "请设置面板访问端口 [默认随机端口]：" config_port
+            read -rp "请设置面板访问端口 [默认随机端口]: " config_port
         fi
     done
     /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password} >/dev/null 2>&1
@@ -180,7 +180,7 @@ info_bar(){
     echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
     echo "#############################################################"
     echo ""
-    yellow "正在检查VPS系统配置环境，请稍等..."
+    yellow "正在检查VPS系统配置环境, 请稍等..."
     sleep 2
 }
 
@@ -222,15 +222,15 @@ install_xui() {
 
 show_login_info(){
     if [[ -n $v4 && -z $v6 ]]; then
-        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
+        echo -e "面板IPv4登录地址为: ${GREEN}http://$v4:$config_port ${PLAIN}"
         elif [[ -n $v6 && -z $v4 ]]; then
-        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+        echo -e "面板IPv6登录地址为: ${GREEN}http://[$v6]:$config_port ${PLAIN}"
         elif [[ -n $v4 && -n $v6 ]]; then
-        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
-        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+        echo -e "面板IPv4登录地址为: ${GREEN}http://$v4:$config_port ${PLAIN}"
+        echo -e "面板IPv6登录地址为: ${GREEN}http://[$v6]:$config_port ${PLAIN}"
     fi
-    echo -e "登录用户名：${GREEN}$config_account ${PLAIN}"
-    echo -e "登录密码：${GREEN}$config_password ${PLAIN}"
+    echo -e "登录用户名: ${GREEN}$config_account ${PLAIN}"
+    echo -e "登录密码: ${GREEN}$config_password ${PLAIN}"
 }
 
 check_centos8
