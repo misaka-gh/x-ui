@@ -473,7 +473,9 @@ show_usage() {
     echo "------------------------------------------"
 }
 
-show_login_info(){
+check_login_info(){
+    yellow "正在检查VPS系统配置环境，请稍等..."
+
     WgcfIPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfIPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     if [[ $WgcfIPv4Status =~ "on"|"plus" ]] || [[ $WgcfIPv6Status =~ "on"|"plus" ]]; then
@@ -487,14 +489,6 @@ show_login_info(){
     fi
     
     config_port=$(/usr/local/x-ui/x-ui 2>&1 | grep tcp | awk '{print $5}' | sed "s/://g")
-    if [[ -n $v4 && -z $v6 ]]; then
-        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
-    elif [[ -n $v6 && -z $v4 ]]; then
-        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
-    elif [[ -n $v4 && -n $v6 ]]; then
-        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
-        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
-    fi
 }
 
 show_menu() {
@@ -526,7 +520,14 @@ show_menu() {
     "
     show_status
     echo ""
-    show_login_info
+    if [[ -n $v4 && -z $v6 ]]; then
+        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
+    elif [[ -n $v6 && -z $v4 ]]; then
+        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+    elif [[ -n $v4 && -n $v6 ]]; then
+        echo -e "面板IPv4登录地址为：${GREEN}http://$v4:$config_port ${PLAIN}"
+        echo -e "面板IPv6登录地址为：${GREEN}http://[$v6]:$config_port ${PLAIN}"
+    fi
     echo && read -rp "请输入选择 [0-17]: " num
     
     case "${num}" in
@@ -568,5 +569,5 @@ if [[ $# > 0 ]]; then
         *) show_usage ;;
     esac
 else
-    show_menu
+    check_login_info && show_menu
 fi
