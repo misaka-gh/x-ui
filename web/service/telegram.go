@@ -3,7 +3,6 @@ package service
 import (
 	"fmt"
 	"log"
-	"net"
 	"os"
 	"runtime"
 	"strconv"
@@ -54,28 +53,7 @@ func (s *TelegramService) GetsystemStatus() string {
 	status += fmt.Sprintf("xray内核版本:%s\r\n", s.xrayService.GetXrayVersion())
 	//ip address
 	var ip string
-	netInterfaces, err := net.Interfaces()
-	if err != nil {
-		fmt.Println("net.Interfaces failed, err:", err.Error())
-	}
-
-	for i := 0; i < len(netInterfaces); i++ {
-		if (netInterfaces[i].Flags & net.FlagUp) != 0 {
-			addrs, _ := netInterfaces[i].Addrs()
-
-			for _, address := range addrs {
-				if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-					if ipnet.IP.To4() != nil {
-						ip = ipnet.IP.String()
-						break
-					} else {
-						ip = ipnet.IP.String()
-						break
-					}
-				}
-			}
-		}
-	}
+	ip = common.GetMyIpAddr()
 	status += fmt.Sprintf("IP地址:%s\r\n \r\n", ip)
 	//get traffic
 	inbouds, err := s.inboundService.GetAllInbounds()
@@ -143,6 +121,7 @@ func (s *TelegramService) StartRun() {
 			inboundPortValue, err := strconv.Atoi(inboundPortStr)
 			if err != nil {
 				msg.Text = "无效的入站端口，请检查"
+				break
 			}
 			//logger.Infof("Will delete port:%d inbound", inboundPortValue)
 			error := s.inboundService.DelInboundByPort(inboundPortValue)
@@ -163,6 +142,7 @@ func (s *TelegramService) StartRun() {
 			inboundPortValue, err := strconv.Atoi(inboundPortStr)
 			if err != nil {
 				msg.Text = "无效的入站端口，请检查"
+				break
 			}
 			//logger.Infof("Will delete port:%d inbound", inboundPortValue)
 			error := s.inboundService.DisableInboundByPort(inboundPortValue)
@@ -176,6 +156,7 @@ func (s *TelegramService) StartRun() {
 			inboundPortValue, err := strconv.Atoi(inboundPortStr)
 			if err != nil {
 				msg.Text = "无效的入站端口，请检查"
+				break
 			}
 			//logger.Infof("Will delete port:%d inbound", inboundPortValue)
 			error := s.inboundService.EnableInboundByPort(inboundPortValue)
@@ -183,6 +164,27 @@ func (s *TelegramService) StartRun() {
 				msg.Text = fmt.Sprintf("尝试启用端口为 %d 的节点失败, err: %s", inboundPortValue, error)
 			} else {
 				msg.Text = fmt.Sprintf("已成功启用端口为 %d 的节点", inboundPortValue)
+			}
+		case "clear":
+			inboundPortStr := update.Message.CommandArguments()
+			inboundPortValue, err := strconv.Atoi(inboundPortStr)
+			if err != nil {
+				msg.Text = "无效的入站端口，请检查"
+				break
+			}
+			error := s.inboundService.ClearTrafficByPort(inboundPortValue)
+			if error != nil {
+				msg.Text = fmt.Sprintf("清除端口为 %d 的节点流量失败, err:%s", inboundPortValue, error)
+			} else {
+				msg.Text = fmt.Sprintf("已成功清除端口为 %d 的节点流量", inboundPortValue)
+			}
+
+		case "clearall":
+			error := s.inboundService.ClearAllInboundTraffic()
+			if error != nil {
+				msg.Text = fmt.Sprintf("清理所有节点流量失败, err:%s", error)
+			} else {
+				msg.Text = fmt.Sprintf("已成功清理所有节点流量")
 			}
 		case "version":
 			versionStr := update.Message.CommandArguments()
@@ -201,12 +203,15 @@ func (s *TelegramService) StartRun() {
 		default:
 			//NOTE:here we need string as a new line each one,we should use ``
 			msg.Text = `Misaka x-ui 魔改优化版 Telegram Bot 使用说明
+
 /help 获取bot的帮助信息 (此菜单)
 /delete [port] 删除对应端口的节点
 /restart 重启xray内核
 /status 获取当前系统状态
 /enable [port] 开启对应端口的节点
 /disable [port] 关闭对应端口的节点
+/clear [port] 清理对应端口的节点流量
+/clearall 清理所有节点流量
 /version [version] 将会升级xray内核到 [version] 版本
 `
 		}
