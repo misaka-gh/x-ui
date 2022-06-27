@@ -34,38 +34,38 @@ func (s *TelegramService) GetsystemStatus() string {
 		fmt.Println("get hostname error:", err)
 		return ""
 	}
-	status = fmt.Sprintf("主机名称:%s\r\n", name)
-	status += fmt.Sprintf("系统类型:%s\r\n", runtime.GOOS)
-	status += fmt.Sprintf("系统架构:%s\r\n", runtime.GOARCH)
+	status = fmt.Sprintf("主机名称: %s\r\n", name)
+	status += fmt.Sprintf("系统类型: %s\r\n", runtime.GOOS)
+	status += fmt.Sprintf("CPU架构: %s\r\n", runtime.GOARCH)
 	avgState, err := load.Avg()
 	if err != nil {
 		logger.Warning("get load avg failed:", err)
 	} else {
-		status += fmt.Sprintf("系统负载:%.2f,%.2f,%.2f\r\n", avgState.Load1, avgState.Load5, avgState.Load15)
+		status += fmt.Sprintf("系统负载: %.2f,%.2f,%.2f\r\n", avgState.Load1, avgState.Load5, avgState.Load15)
 	}
 	upTime, err := host.Uptime()
 	if err != nil {
 		logger.Warning("get uptime failed:", err)
 	} else {
-		status += fmt.Sprintf("运行时间:%s\r\n", common.FormatTime(upTime))
+		status += fmt.Sprintf("运行时间: %s\r\n", common.FormatTime(upTime))
 	}
 	//xray version
-	status += fmt.Sprintf("xray内核版本:%s\r\n", s.xrayService.GetXrayVersion())
+	status += fmt.Sprintf("xray内核版本: %s\r\n", s.xrayService.GetXrayVersion())
 	//ip address
 	var ip string
 	ip = common.GetMyIpAddr()
-	status += fmt.Sprintf("IP地址:%s\r\n \r\n", ip)
+	status += fmt.Sprintf("IP地址: %s\r\n \r\n", ip)
 	//get traffic
 	inbouds, err := s.inboundService.GetAllInbounds()
 	if err != nil {
 		logger.Warning("StatsNotifyJob run error:", err)
 	}
 	for _, inbound := range inbouds {
-		status += fmt.Sprintf("节点名称:%s\r\n端口:%d\r\n上行流量↑:%s\r\n下行流量↓:%s\r\n总流量:%s\r\n", inbound.Remark, inbound.Port, common.FormatTraffic(inbound.Up), common.FormatTraffic(inbound.Down), common.FormatTraffic((inbound.Up + inbound.Down)))
+		status += fmt.Sprintf("节点名称: %s\r\n端口: %d\r\n上行流量↑: %s\r\n下行流量↓: %s\r\n总流量: %s\r\n", inbound.Remark, inbound.Port, common.FormatTraffic(inbound.Up), common.FormatTraffic(inbound.Down), common.FormatTraffic((inbound.Up + inbound.Down)))
 		if inbound.ExpiryTime == 0 {
-			status += fmt.Sprintf("到期时间:无限期\r\n \r\n")
+			status += fmt.Sprintf("到期时间: 无限期\r\n \r\n")
 		} else {
-			status += fmt.Sprintf("到期时间:%s\r\n \r\n", time.Unix((inbound.ExpiryTime/1000), 0).Format("2006-01-02 15:04:05"))
+			status += fmt.Sprintf("到期时间: %s\r\n \r\n", time.Unix((inbound.ExpiryTime/1000), 0).Format("2006-01-02 15:04:05"))
 		}
 	}
 	return status
@@ -76,13 +76,13 @@ func (s *TelegramService) StartRun() {
 	s.settingService = SettingService{}
 	tgBottoken, err := s.settingService.GetTgBotToken()
 	if err != nil || tgBottoken == "" {
-		logger.Infof("telegram service start run failed,GetTgBotToken fail,err:%v,tgBottoken:%s", err, tgBottoken)
+		logger.Infof("Telegram service start run failed, GetTgBotToken fail, err:%v, tgBottoken: %s", err, tgBottoken)
 		return
 	}
 	logger.Infof("TelegramService GetTgBotToken:%s", tgBottoken)
 	botInstace, err = tgbotapi.NewBotAPI(tgBottoken)
 	if err != nil {
-		logger.Infof("telegram service start run failed,NewBotAPI fail:%v,tgBottoken:%s", err, tgBottoken)
+		logger.Infof("Telegram service start run failed, NewBotAPI fail: %v, tgBottoken: %s", err, tgBottoken)
 		return
 	}
 	botInstace.Debug = false
@@ -90,10 +90,10 @@ func (s *TelegramService) StartRun() {
 	//get all my commands
 	commands, err := botInstace.GetMyCommands()
 	if err != nil {
-		logger.Warning("telegram service start run error,GetMyCommandsfail:", err)
+		logger.Warning("Telegram service start run error, GetMyCommandsfail:", err)
 	}
 	for _, command := range commands {
-		fmt.Printf("command %s,Description:%s \r\n", command.Command, command.Description)
+		fmt.Printf("Command %s, Description:%s \r\n", command.Command, command.Description)
 	}
 	//get update
 	chanMessage := tgbotapi.NewUpdate(0)
@@ -227,11 +227,11 @@ func (s *TelegramService) SendMsgToTgbot(msg string) {
 	logger.Info("SendMsgToTgbot entered")
 	tgBotid, err := s.settingService.GetTgBotChatId()
 	if err != nil {
-		logger.Warning("sendMsgToTgbot failed,GetTgBotChatId fail:", err)
+		logger.Warning("sendMsgToTgbot failed, GetTgBotChatId fail:", err)
 		return
 	}
 	if tgBotid == 0 {
-		logger.Warning("sendMsgToTgbot failed,GetTgBotChatId illegal")
+		logger.Warning("sendMsgToTgbot failed, GetTgBotChatId illegal")
 		return
 	}
 
