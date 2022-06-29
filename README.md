@@ -48,6 +48,8 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-
 /status 获取当前系统状态
 /enable [port] 开启对应端口的节点
 /disable [port] 关闭对应端口的节点
+/clear [port] 清理对应端口的节点流量
+/clearall 清理所有节点流量
 /version [version] 将会升级xray内核到 [version] 版本
 ```
 
