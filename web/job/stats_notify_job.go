@@ -66,7 +66,7 @@ func (j *StatsNotifyJob) UserLoginNotify(username string, ip string, time string
 }
 
 func (j *StatsNotifyJob) SSHStatusLoginNotify(xuiStartTime string) {
-	getSSHUserNumber, error := exec.Command("bash", "-c", "who | awk  '{print $1}'|wc -l").Output()
+	getSSHUserNumber, error := exec.Command("bash", "-c", "who | awk  '{print $1}' | wc -l").Output()
 	if error != nil {
 		fmt.Println("getSSHUserNumber error:", error)
 		return
@@ -86,7 +86,7 @@ func (j *StatsNotifyJob) SSHStatusLoginNotify(xuiStartTime string) {
 			return
 		}
 		//Time compare,need if x-ui got restart while ssh already exist users
-		SSHLoginTime, error := exec.Command("bash", "-c", "who | awk  '{print $3,$4}'|tail -n 1 ").Output()
+		SSHLoginTime, error := exec.Command("bash", "-c", "who | awk  '{print $3,$4}' | tail -n 1 ").Output()
 		if error != nil {
 			fmt.Println("getLoginTime error:", error.Error())
 			return
@@ -107,15 +107,15 @@ func (j *StatsNotifyJob) SSHStatusLoginNotify(xuiStartTime string) {
 			fmt.Printf("SSHLogin[%s] early than XUI start[%s]\r\n", SSHLoginTimeStr, xuiStartTime)
 		}
 
-		SSHLoginUserName, error := exec.Command("bash", "-c", "who | awk  '{print $1}'|tail -n 1").Output()
+		SSHLoginUserName, error := exec.Command("bash", "-c", "who | awk  '{print $1}'| tail -n 1").Output()
 		if error != nil {
 			fmt.Println("getSSHLoginUserName error:", error.Error())
 			return
 		}
 
-		SSHLoginIpAddr, error := exec.Command("bash", "-c", "who | awk  '{print $5}'|tail -n 1 | cut -d \"(\" -f2 | cut -d \")\" -f1 ").Output()
+		SSHLoginIpAddr, error := exec.Command("bash", "-c", "who | awk  '{print $5}' | tail -n 1 | cut -d \"(\" -f2 | cut -d \")\" -f1").Output()
 		if error != nil {
-			fmt.Println("getSSHLoginIpAddr error:", error)
+			fmt.Println("getSSHLoginIpAddr error: ", error)
 			return
 		}
 
