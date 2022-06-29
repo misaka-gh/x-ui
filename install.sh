@@ -73,6 +73,7 @@ check_centos8(){
 }
 
 check_status(){
+    yellow "正在检查VPS系统及IP配置环境, 请稍等..."
     WgcfIPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfIPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     if [[ $WgcfIPv4Status =~ "on"|"plus" ]] || [[ $WgcfIPv6Status =~ "on"|"plus" ]]; then
@@ -180,7 +181,7 @@ info_bar(){
     echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
     echo "#############################################################"
     echo ""
-    yellow "正在检查VPS系统配置环境, 请稍等..."
+    echo -e "系统： ${GREEN} ${CMD} ${PLAIN}"
     sleep 2
 }
 
@@ -223,9 +224,9 @@ install_xui() {
 show_login_info(){
     if [[ -n $v4 && -z $v6 ]]; then
         echo -e "面板IPv4登录地址为: ${GREEN}http://$v4:$config_port ${PLAIN}"
-        elif [[ -n $v6 && -z $v4 ]]; then
+    elif [[ -n $v6 && -z $v4 ]]; then
         echo -e "面板IPv6登录地址为: ${GREEN}http://[$v6]:$config_port ${PLAIN}"
-        elif [[ -n $v4 && -n $v6 ]]; then
+    elif [[ -n $v4 && -n $v6 ]]; then
         echo -e "面板IPv4登录地址为: ${GREEN}http://$v4:$config_port ${PLAIN}"
         echo -e "面板IPv6登录地址为: ${GREEN}http://[$v6]:$config_port ${PLAIN}"
     fi
