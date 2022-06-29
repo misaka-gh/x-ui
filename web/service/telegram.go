@@ -190,7 +190,7 @@ func (s *TelegramService) StartRun() {
 			versionStr := update.Message.CommandArguments()
 			currentVersion, _ := s.serverService.GetXrayVersions()
 			if currentVersion[0] == versionStr {
-				msg.Text = fmt.Sprintf("xray内核不能更新和本地一样的版本", versionStr)
+				msg.Text = fmt.Sprintf("不能更新成和本地xray内核一样的版本")
 			}
 			error := s.serverService.UpdateXray(versionStr)
 			if error != nil {
