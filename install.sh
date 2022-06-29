@@ -190,7 +190,7 @@ install_xui() {
     info_bar
     
     if [[ -e /usr/local/x-ui/ ]]; then
-        yellow "检测到x-ui已安装, 确认卸载原x-ui面板?"
+        yellow "检测到x-ui面板已安装, 确认卸载原x-ui面板?"
         read -rp "请输入选项 [Y/N, 默认N]" yn
         if [[ $yn =~ "Y"|"y" ]]; then
             x-ui uninstall
