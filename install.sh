@@ -181,12 +181,23 @@ info_bar(){
     echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
     echo "#############################################################"
     echo ""
-    echo -e "系统： ${GREEN} ${CMD} ${PLAIN}"
+    echo -e "系统: ${GREEN} ${CMD} ${PLAIN}"
+    echo ""
     sleep 2
 }
 
 install_xui() {
     info_bar
+    
+    if [[ -e /usr/local/x-ui/ ]]; then
+        yellow "检测到x-ui已安装, 确认卸载原x-ui面板?"
+        read -rp "请输入选项 [Y/N, 默认N]" yn
+        if [[ $yn =~ "Y"|"y" ]]; then
+            x-ui uninstall
+        else
+            exit 1
+        fi
+    fi
     
     systemctl stop x-ui >/dev/null 2>&1
     
