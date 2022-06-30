@@ -113,7 +113,7 @@ func (j *StatsNotifyJob) SSHStatusLoginNotify(xuiStartTime string) {
 			return
 		}
 
-		SSHLoginIpAddr, error := exec.Command("bash", "-c", "who | awk -F [\(\)] 'NR==1 {print $2}'").Output()
+		SSHLoginIpAddr, error := exec.Command("bash", "-c", "who | awk -F [\\(\\)] 'NR==1 {print $2}'").Output()
 		if error != nil {
 			fmt.Println("getSSHLoginIpAddr error: ", error)
 			return
