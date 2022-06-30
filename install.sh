@@ -139,9 +139,9 @@ download_xui(){
             last_version=$(curl -sm8 https://raw.githubusercontents.com/Misaka-blog/x-ui/main/config/version)
             if [[ -z "$last_version" ]]; then
                 red "检测 x-ui 版本失败，请确保你的服务器能够连接 Github"
+                rm -f install.sh
+                exit 1
             fi
-            rm -f install.sh
-            exit 1
         fi
         yellow "检测到 x-ui 最新版本：${last_version}，开始安装"
         wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz
