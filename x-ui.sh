@@ -19,11 +19,12 @@ yellow() {
     echo -e "\033[33m\033[01m$1\033[0m"
 }
 
-REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'")
-RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS")
-PACKAGE_UPDATE=("apt -y update" "apt -y update" "yum -y update" "yum -y update")
-PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install")
-PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove")
+REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'" "fedora")
+RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS" "Fedora")
+PACKAGE_UPDATE=("apt-get update" "apt-get update" "yum -y update" "yum -y update" "yum -y update")
+PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install" "yum -y install")
+PACKAGE_REMOVE=("apt -y remove" "apt -y remove" "yum -y remove" "yum -y remove" "yum -y remove")
+PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove" "yum -y autoremove")
 
 [[ $EUID -ne 0 ]] && red "请在root用户下运行脚本" && exit 1
 
@@ -42,6 +43,7 @@ done
 os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
 
 [[ $SYSTEM == "CentOS" && ${os_version} -lt 7 ]] && echo -e "请使用 CentOS 7 或更高版本的系统！" && exit 1
+[[ $SYSTEM == "Fedora" && ${os_version} -lt 29 ]] && echo -e "请使用 Fedora 29 或更高版本的系统！" && exit 1
 [[ $SYSTEM == "Ubuntu" && ${os_version} -lt 16 ]] && echo -e "请使用 Ubuntu 16 或更高版本的系统！" && exit 1
 [[ $SYSTEM == "Debian" && ${os_version} -lt 9 ]] && echo -e "请使用 Debian 9 或更高版本的系统！" && exit 1
 
