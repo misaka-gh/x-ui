@@ -107,11 +107,16 @@ update() {
         fi
         
         last_version=$(curl -Ls "https://api.github.com/repos/Misaka-blog/x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-        if [[ ! -n "$last_version" ]]; then
-            red "检测 x-ui 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 x-ui 版本安装"
-            rm -f install.sh
-            exit 1
+        if [[ -z "$last_version" ]]; then
+            red "检测 x-ui 版本失败，可能是超出 Github API 限制，正在使用备用源检测最新版本"
+            last_version=$(curl -sm8 https://raw.githubusercontents.com/Misaka-blog/x-ui/main/config/version)
+            if [[ -z "$last_version" ]]; then
+                red "检测 x-ui 版本失败，请确保你的服务器能够连接 Github"
+                rm -f install.sh
+                exit 1
+            fi
         fi
+        
         yellow "检测到 x-ui 最新版本: ${last_version}，开始安装"
         wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(archAffix).tar.gz https://github.com/Misaka-blog/x-ui/releases/download/${last_version}/x-ui-linux-$(archAffix).tar.gz
         if [[ $? -ne 0 ]]; then
