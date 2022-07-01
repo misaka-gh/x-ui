@@ -14,6 +14,10 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-
 
 快捷方式：`x-ui`
 
+> 如提示 `wget: command not found` 请安装wget后再执行本脚本
+
+> CentOS: `yum install -y wget` Debian / Ubuntu: `apt install -y wget`
+
 ## 建议系统
 
 * CentOS 7+
