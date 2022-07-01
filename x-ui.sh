@@ -111,7 +111,7 @@ update() {
             red "检测 x-ui 版本失败，可能是超出 Github API 限制，正在使用备用源检测最新版本"
             last_version=$(curl -sm8 https://raw.githubusercontents.com/Misaka-blog/x-ui/main/config/version)
             if [[ -z "$last_version" ]]; then
-                red "检测 x-ui 版本失败，请确保你的服务器能够连接 Github"
+                red "检测 x-ui 版本失败，请确保你的服务器能够连接 Github 服务"
                 rm -f install.sh
                 exit 1
             fi

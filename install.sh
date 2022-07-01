@@ -140,7 +140,7 @@ download_xui(){
             red "检测 x-ui 版本失败，可能是超出 Github API 限制，正在使用备用源检测最新版本"
             last_version=$(curl -sm8 https://raw.githubusercontents.com/Misaka-blog/x-ui/main/config/version)
             if [[ -z "$last_version" ]]; then
-                red "检测 x-ui 版本失败，请确保你的服务器能够连接 Github"
+                red "检测 x-ui 版本失败，请确保你的服务器能够连接 Github 服务"
                 rm -f install.sh
                 exit 1
             fi
@@ -196,11 +196,12 @@ install_xui() {
     info_bar
     
     if [[ -e /usr/local/x-ui/ ]]; then
-        yellow "检测到x-ui面板已安装, 确认卸载原x-ui面板?"
+        yellow "检测到目前已安装x-ui面板, 确认卸载原x-ui面板?"
         read -rp "请输入选项 [Y/N, 默认N]" yn
         if [[ $yn =~ "Y"|"y" ]]; then
             x-ui uninstall
         else
+            red "已取消卸载, 脚本退出!"
             exit 1
         fi
     fi
