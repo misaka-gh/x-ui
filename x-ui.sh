@@ -442,6 +442,7 @@ open_ports(){
     iptables -X 2>/dev/null
     netfilter-persistent save 2>/dev/null
     green "VPS中的所有网络端口已开启"
+    before_show_menu
 }
 
 show_usage() {
@@ -535,9 +536,9 @@ show_menu() {
         12) check_install && enable_xui ;;
         13) check_install && disable_xui ;;
         14) install_bbr ;;
-        15) wget -N https://raw.githubusercontents.com/Misaka-blog/acme-1key/master/acme1key.sh && bash acme1key.sh ;;
+        15) wget -N https://raw.githubusercontents.com/Misaka-blog/acme-1key/master/acme1key.sh && bash acme1key.sh && before_show_menu ;;
         16) open_ports ;;
-        17) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/misakawarp.sh && bash misakawarp.sh ;;
+        17) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/misakawarp.sh && bash misakawarp.sh && before_show_menu ;;
         *) red "请输入正确的数字 [0-17]" ;;
     esac
 }
