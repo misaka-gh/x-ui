@@ -15,10 +15,10 @@ import (
 	"github.com/shirou/gopsutil/load"
 )
 
-//This should be global variable,and only one instance
+// This should be global variable, and only one instance
 var botInstace *tgbotapi.BotAPI
 
-//结构体类型大写表示可以被其他包访问
+// 结构体类型大写表示可以被其他包访问
 type TelegramService struct {
 	xrayService    XrayService
 	serverService  ServerService
@@ -28,7 +28,7 @@ type TelegramService struct {
 
 func (s *TelegramService) GetsystemStatus() string {
 	var status string
-	//get hostname
+	// get hostname
 	name, err := os.Hostname()
 	if err != nil {
 		fmt.Println("get hostname error: ", err)
@@ -49,13 +49,13 @@ func (s *TelegramService) GetsystemStatus() string {
 	} else {
 		status += fmt.Sprintf("运行时间: %s\r\n", common.FormatTime(upTime))
 	}
-	//xray version
+	// xray version
 	status += fmt.Sprintf("xray内核版本: %s\r\n", s.xrayService.GetXrayVersion())
-	//ip address
+	// ip address
 	var ip string
 	ip = common.GetMyIpAddr()
 	status += fmt.Sprintf("IP地址: %s\r\n \r\n", ip)
-	//get traffic
+	// get traffic
 	inbouds, err := s.inboundService.GetAllInbounds()
 	if err != nil {
 		logger.Warning("StatsNotifyJob run error: ", err)
@@ -87,7 +87,7 @@ func (s *TelegramService) StartRun() {
 	}
 	botInstace.Debug = false
 	fmt.Printf("Authorized on account %s", botInstace.Self.UserName)
-	//get all my commands
+	// get all my commands
 	commands, err := botInstace.GetMyCommands()
 	if err != nil {
 		logger.Warning("Telegram service start run error, GetMyCommandsfail: ", err)
@@ -95,7 +95,7 @@ func (s *TelegramService) StartRun() {
 	for _, command := range commands {
 		fmt.Printf("Command %s, Description: %s \r\n", command.Command, command.Description)
 	}
-	//get update
+	// get update
 	chanMessage := tgbotapi.NewUpdate(0)
 	chanMessage.Timeout = 60
 
@@ -103,7 +103,7 @@ func (s *TelegramService) StartRun() {
 
 	for update := range updates {
 		if update.Message == nil {
-			//NOTE:may ther are different bot instance,we could use different bot endApiPoint
+			// NOTE:may ther are different bot instance,we could use different bot endApiPoint
 			updates.Clear()
 			continue
 		}
@@ -203,7 +203,7 @@ func (s *TelegramService) StartRun() {
 		case "start":
 			msg.Text = "欢迎使用x-ui面板机器人, 请输入 /help 查看帮助信息"
 		default:
-			//NOTE:here we need string as a new line each one,we should use ``
+			// NOTE:here we need string as a new line each one,we should use ``
 			msg.Text = `Misaka x-ui 魔改优化版 Telegram Bot 使用说明
 
 /help 获取bot的帮助信息 (此菜单)
@@ -247,7 +247,7 @@ func (s *TelegramService) SendMsgToTgbot(msg string) {
 	}
 }
 
-//NOTE:This function can't be called repeatly
+// NOTE:This function can't be called repeatly
 func (s *TelegramService) StopRunAndClose() {
 	if botInstace != nil {
 		botInstace.StopReceivingUpdates()
