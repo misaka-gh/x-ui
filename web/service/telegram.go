@@ -34,32 +34,39 @@ func (s *TelegramService) GetsystemStatus() string {
 		fmt.Println("get hostname error: ", err)
 		return ""
 	}
+
 	status = fmt.Sprintf("主机名称: %s\r\n", name)
 	status += fmt.Sprintf("系统类型: %s\r\n", runtime.GOOS)
 	status += fmt.Sprintf("CPU架构: %s\r\n", runtime.GOARCH)
+
 	avgState, err := load.Avg()
 	if err != nil {
 		logger.Warning("get load avg failed: ", err)
 	} else {
 		status += fmt.Sprintf("系统负载: %.2f, %.2f, %.2f\r\n", avgState.Load1, avgState.Load5, avgState.Load15)
 	}
+
 	upTime, err := host.Uptime()
 	if err != nil {
 		logger.Warning("get uptime failed: ", err)
 	} else {
 		status += fmt.Sprintf("运行时间: %s\r\n", common.FormatTime(upTime))
 	}
+
 	// xray version
 	status += fmt.Sprintf("xray内核版本: %s\r\n", s.xrayService.GetXrayVersion())
+
 	// ip address
 	var ip string
 	ip = common.GetMyIpAddr()
 	status += fmt.Sprintf("IP地址: %s\r\n \r\n", ip)
+
 	// get traffic
 	inbouds, err := s.inboundService.GetAllInbounds()
 	if err != nil {
 		logger.Warning("StatsNotifyJob run error: ", err)
 	}
+
 	for _, inbound := range inbouds {
 		status += fmt.Sprintf("节点名称: %s\r\n端口: %d\r\n上行流量↑: %s\r\n下行流量↓: %s\r\n总流量: %s\r\n", inbound.Remark, inbound.Port, common.FormatTraffic(inbound.Up), common.FormatTraffic(inbound.Down), common.FormatTraffic((inbound.Up + inbound.Down)))
 		if inbound.ExpiryTime == 0 {
@@ -75,26 +82,32 @@ func (s *TelegramService) StartRun() {
 	logger.Info("telegram service ready to run")
 	s.settingService = SettingService{}
 	tgBottoken, err := s.settingService.GetTgBotToken()
+
 	if err != nil || tgBottoken == "" {
 		logger.Infof("Telegram service start run failed, GetTgBotToken fail, err: %v, tgBottoken: %s", err, tgBottoken)
 		return
 	}
 	logger.Infof("TelegramService GetTgBotToken:%s", tgBottoken)
+
 	botInstace, err = tgbotapi.NewBotAPI(tgBottoken)
+
 	if err != nil {
 		logger.Infof("Telegram service start run failed, NewBotAPI fail: %v, tgBottoken: %s", err, tgBottoken)
 		return
 	}
 	botInstace.Debug = false
 	fmt.Printf("Authorized on account %s", botInstace.Self.UserName)
+
 	// get all my commands
 	commands, err := botInstace.GetMyCommands()
 	if err != nil {
 		logger.Warning("Telegram service start run error, GetMyCommandsfail: ", err)
 	}
+
 	for _, command := range commands {
 		fmt.Printf("Command %s, Description: %s \r\n", command.Command, command.Description)
 	}
+
 	// get update
 	chanMessage := tgbotapi.NewUpdate(0)
 	chanMessage.Timeout = 60
@@ -119,10 +132,12 @@ func (s *TelegramService) StartRun() {
 		case "delete":
 			inboundPortStr := update.Message.CommandArguments()
 			inboundPortValue, err := strconv.Atoi(inboundPortStr)
+
 			if err != nil {
 				msg.Text = "无效的入站端口，请检查"
 				break
 			}
+
 			//logger.Infof("Will delete port:%d inbound", inboundPortValue)
 			error := s.inboundService.DelInboundByPort(inboundPortValue)
 			if error != nil {
@@ -130,6 +145,7 @@ func (s *TelegramService) StartRun() {
 			} else {
 				msg.Text = fmt.Sprintf("已成功删除端口为 %d 的节点", inboundPortValue)
 			}
+
 		case "restart":
 			err := s.xrayService.RestartXray(true)
 			if err != nil {
@@ -137,6 +153,7 @@ func (s *TelegramService) StartRun() {
 			} else {
 				msg.Text = "已成功重启xray核心"
 			}
+
 		case "disable":
 			inboundPortStr := update.Message.CommandArguments()
 			inboundPortValue, err := strconv.Atoi(inboundPortStr)
@@ -151,6 +168,7 @@ func (s *TelegramService) StartRun() {
 			} else {
 				msg.Text = fmt.Sprintf("已成功禁用端口为 %d 的节点", inboundPortValue)
 			}
+
 		case "enable":
 			inboundPortStr := update.Message.CommandArguments()
 			inboundPortValue, err := strconv.Atoi(inboundPortStr)
@@ -165,6 +183,7 @@ func (s *TelegramService) StartRun() {
 			} else {
 				msg.Text = fmt.Sprintf("已成功启用端口为 %d 的节点", inboundPortValue)
 			}
+
 		case "clear":
 			inboundPortStr := update.Message.CommandArguments()
 			inboundPortValue, err := strconv.Atoi(inboundPortStr)
@@ -186,6 +205,7 @@ func (s *TelegramService) StartRun() {
 			} else {
 				msg.Text = fmt.Sprintf("已成功清理所有节点流量")
 			}
+
 		case "version":
 			versionStr := update.Message.CommandArguments()
 			currentVersion, _ := s.serverService.GetXrayVersions()
@@ -198,10 +218,13 @@ func (s *TelegramService) StartRun() {
 			} else {
 				msg.Text = fmt.Sprintf("xray内核版本升级为 %s 成功", versionStr)
 			}
+
 		case "status":
 			msg.Text = s.GetsystemStatus()
+
 		case "start":
 			msg.Text = "欢迎使用x-ui面板机器人, 请输入 /help 查看帮助信息"
+
 		default:
 			// NOTE:here we need string as a new line each one,we should use ``
 			msg.Text = `Misaka x-ui 魔改优化版 Telegram Bot 使用说明
