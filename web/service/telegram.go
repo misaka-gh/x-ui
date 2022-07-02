@@ -190,7 +190,7 @@ func (s *TelegramService) StartRun() {
 			versionStr := update.Message.CommandArguments()
 			currentVersion, _ := s.serverService.GetXrayVersions()
 			if currentVersion[0] == versionStr {
-				msg.Text = fmt.Sprintf("不能更新成和本地x-ui的xray内核一样的版本")
+				msg.Text = fmt.Sprint("不能更新成和本地x-ui的xray内核一样的版本")
 			}
 			error := s.serverService.UpdateXray(versionStr)
 			if error != nil {
@@ -200,6 +200,8 @@ func (s *TelegramService) StartRun() {
 			}
 		case "status":
 			msg.Text = s.GetsystemStatus()
+		case "start":
+			msg.Text = "欢迎使用x-ui面板机器人, 请输入 /help 查看帮助信息"
 		default:
 			//NOTE:here we need string as a new line each one,we should use ``
 			msg.Text = `Misaka x-ui 魔改优化版 Telegram Bot 使用说明
