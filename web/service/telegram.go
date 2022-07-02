@@ -31,7 +31,7 @@ func (s *TelegramService) GetsystemStatus() string {
 	//get hostname
 	name, err := os.Hostname()
 	if err != nil {
-		fmt.Println("get hostname error:", err)
+		fmt.Println("get hostname error: ", err)
 		return ""
 	}
 	status = fmt.Sprintf("主机名称: %s\r\n", name)
@@ -39,13 +39,13 @@ func (s *TelegramService) GetsystemStatus() string {
 	status += fmt.Sprintf("CPU架构: %s\r\n", runtime.GOARCH)
 	avgState, err := load.Avg()
 	if err != nil {
-		logger.Warning("get load avg failed:", err)
+		logger.Warning("get load avg failed: ", err)
 	} else {
-		status += fmt.Sprintf("系统负载: %.2f,%.2f,%.2f\r\n", avgState.Load1, avgState.Load5, avgState.Load15)
+		status += fmt.Sprintf("系统负载: %.2f, %.2f, %.2f\r\n", avgState.Load1, avgState.Load5, avgState.Load15)
 	}
 	upTime, err := host.Uptime()
 	if err != nil {
-		logger.Warning("get uptime failed:", err)
+		logger.Warning("get uptime failed: ", err)
 	} else {
 		status += fmt.Sprintf("运行时间: %s\r\n", common.FormatTime(upTime))
 	}
@@ -58,7 +58,7 @@ func (s *TelegramService) GetsystemStatus() string {
 	//get traffic
 	inbouds, err := s.inboundService.GetAllInbounds()
 	if err != nil {
-		logger.Warning("StatsNotifyJob run error:", err)
+		logger.Warning("StatsNotifyJob run error: ", err)
 	}
 	for _, inbound := range inbouds {
 		status += fmt.Sprintf("节点名称: %s\r\n端口: %d\r\n上行流量↑: %s\r\n下行流量↓: %s\r\n总流量: %s\r\n", inbound.Remark, inbound.Port, common.FormatTraffic(inbound.Up), common.FormatTraffic(inbound.Down), common.FormatTraffic((inbound.Up + inbound.Down)))
@@ -76,7 +76,7 @@ func (s *TelegramService) StartRun() {
 	s.settingService = SettingService{}
 	tgBottoken, err := s.settingService.GetTgBotToken()
 	if err != nil || tgBottoken == "" {
-		logger.Infof("Telegram service start run failed, GetTgBotToken fail, err:%v, tgBottoken: %s", err, tgBottoken)
+		logger.Infof("Telegram service start run failed, GetTgBotToken fail, err: %v, tgBottoken: %s", err, tgBottoken)
 		return
 	}
 	logger.Infof("TelegramService GetTgBotToken:%s", tgBottoken)
@@ -90,10 +90,10 @@ func (s *TelegramService) StartRun() {
 	//get all my commands
 	commands, err := botInstace.GetMyCommands()
 	if err != nil {
-		logger.Warning("Telegram service start run error, GetMyCommandsfail:", err)
+		logger.Warning("Telegram service start run error, GetMyCommandsfail: ", err)
 	}
 	for _, command := range commands {
-		fmt.Printf("Command %s, Description:%s \r\n", command.Command, command.Description)
+		fmt.Printf("Command %s, Description: %s \r\n", command.Command, command.Description)
 	}
 	//get update
 	chanMessage := tgbotapi.NewUpdate(0)
@@ -174,7 +174,7 @@ func (s *TelegramService) StartRun() {
 			}
 			error := s.inboundService.ClearTrafficByPort(inboundPortValue)
 			if error != nil {
-				msg.Text = fmt.Sprintf("清除端口为 %d 的节点流量失败, err:%s", inboundPortValue, error)
+				msg.Text = fmt.Sprintf("清除端口为 %d 的节点流量失败, err: %s", inboundPortValue, error)
 			} else {
 				msg.Text = fmt.Sprintf("已成功清除端口为 %d 的节点流量", inboundPortValue)
 			}
@@ -182,7 +182,7 @@ func (s *TelegramService) StartRun() {
 		case "clearall":
 			error := s.inboundService.ClearAllInboundTraffic()
 			if error != nil {
-				msg.Text = fmt.Sprintf("清理所有节点流量失败, err:%s", error)
+				msg.Text = fmt.Sprintf("清理所有节点流量失败, err: %s", error)
 			} else {
 				msg.Text = fmt.Sprintf("已成功清理所有节点流量")
 			}
@@ -190,7 +190,7 @@ func (s *TelegramService) StartRun() {
 			versionStr := update.Message.CommandArguments()
 			currentVersion, _ := s.serverService.GetXrayVersions()
 			if currentVersion[0] == versionStr {
-				msg.Text = fmt.Sprintf("不能更新成和本地xray内核一样的版本")
+				msg.Text = fmt.Sprintf("不能更新成和本地x-ui的xray内核一样的版本")
 			}
 			error := s.serverService.UpdateXray(versionStr)
 			if error != nil {
