@@ -9,7 +9,7 @@ x-ui教程：https://owo.misaka.rest/x-ui/
 ## 安装命令
 
 ```shell
-wget -N --no-check-certificate https://raw.githubusercontents.com/misaka-gh/x-ui/main/install.sh && bash install.sh
+wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/x-ui/main/install.sh && bash install.sh
 ```
 
 快捷方式：`x-ui`
