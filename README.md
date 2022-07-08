@@ -9,7 +9,7 @@ x-ui教程：https://owo.misaka.rest/x-ui/
 ## 安装命令
 
 ```shell
-wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-ui/main/install.sh && bash install.sh
+wget -N --no-check-certificate https://raw.githubusercontents.com/misaka-gh/x-ui/main/install.sh && bash install.sh
 ```
 
 快捷方式：`x-ui`
@@ -64,7 +64,7 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/x-
 * TG机器人ChatId
 * 机器人周期运行时间，采用crontab语法，语法说明如下
 
-![](https://gcore.jsdelivr.net/gh/Misaka-blog/tuchuang@master/20220420235233.png)
+![](https://gcore.jsdelivr.net/gh/misaka-gh/tuchuang@master/20220420235233.png)
 
 > Crontab表达式生成器：https://cron.qqe2.com/
 
