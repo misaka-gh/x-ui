@@ -17,7 +17,7 @@ require (
 	golang.org/x/text v0.3.7
 	google.golang.org/grpc v1.49.0
 	gorm.io/driver/sqlite v1.3.6
-	gorm.io/gorm v1.23.9
+	gorm.io/gorm v1.23.10
 )
 
 require (
@@ -46,9 +46,9 @@ require (
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0 // indirect
-	golang.org/x/net v0.0.0-20220921155015-db77216a4ee9 // indirect
+	golang.org/x/net v0.0.0-20220921203646-d300de134e69 // indirect
 	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
-	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006 // indirect
+	google.golang.org/genproto v0.0.0-20220921223823-23cae91e6737 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
