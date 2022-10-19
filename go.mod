@@ -45,8 +45,8 @@ require (
 	github.com/tklauser/numcpus v0.5.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
-	golang.org/x/crypto v0.0.0-20221012134737-56aed061732a // indirect
-	golang.org/x/net v0.0.0-20221017152216-f25eb7ecb193 // indirect
+	golang.org/x/crypto v0.1.0 // indirect
+	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/sys v0.1.0 // indirect
 	google.golang.org/genproto v0.0.0-20221018160656-63c7b68cfc55 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
