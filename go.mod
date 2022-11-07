@@ -12,7 +12,7 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/shirou/gopsutil v3.21.11+incompatible
-	github.com/xtls/xray-core v1.6.2
+	github.com/xtls/xray-core v1.6.3
 	go.uber.org/atomic v1.10.0
 	golang.org/x/text v0.4.0
 	google.golang.org/grpc v1.50.1
@@ -47,8 +47,8 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/net v0.1.0 // indirect
-	golang.org/x/sys v0.1.0 // indirect
-	google.golang.org/genproto v0.0.0-20221027153422-115e99e71e1c // indirect
+	golang.org/x/sys v0.2.0 // indirect
+	google.golang.org/genproto v0.0.0-20221107162902-2d387536bcdd // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
