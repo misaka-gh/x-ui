@@ -14,7 +14,7 @@ require (
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/xtls/xray-core v1.7.3
 	go.uber.org/atomic v1.10.0
-	golang.org/x/text v0.6.0
+	golang.org/x/text v0.7.0
 	google.golang.org/grpc v1.52.3
 	gorm.io/driver/sqlite v1.4.4
 	gorm.io/gorm v1.24.5
