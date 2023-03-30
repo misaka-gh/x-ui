@@ -53,7 +53,7 @@ require (
 	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
-	google.golang.org/genproto v0.0.0-20230327215041-6ac7f18bb9d5 // indirect
+	google.golang.org/genproto v0.0.0-20230330154414-c0448cd141ea // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
