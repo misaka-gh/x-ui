@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/BurntSushi/toml v1.2.1
-	github.com/Workiva/go-datastructures v1.0.53
+	github.com/Workiva/go-datastructures v1.1.0
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
@@ -48,7 +48,7 @@ require (
 	github.com/tklauser/numcpus v0.6.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
-	github.com/yusufpapurcu/wmi v1.2.2 // indirect
+	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
