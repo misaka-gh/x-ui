@@ -43,7 +43,7 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.9 // indirect
 	github.com/pires/go-proxyproto v0.7.0 // indirect
 	github.com/sagernet/sing v0.2.7 // indirect
 	github.com/tklauser/go-sysconf v0.3.11 // indirect
