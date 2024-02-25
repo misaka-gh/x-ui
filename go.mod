@@ -1,6 +1,8 @@
 module x-ui
 
-go 1.21.4
+go 1.22
+
+toolchain go1.22.0
 
 require (
 	github.com/BurntSushi/toml v1.3.2
@@ -12,7 +14,7 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/shirou/gopsutil v3.21.11+incompatible
-	github.com/xtls/xray-core v1.8.7
+	github.com/xtls/xray-core v1.8.8
 	go.uber.org/atomic v1.11.0
 	golang.org/x/text v0.14.0
 	google.golang.org/grpc v1.62.0
