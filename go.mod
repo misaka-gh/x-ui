@@ -7,7 +7,7 @@ toolchain go1.22.0
 require (
 	github.com/BurntSushi/toml v1.3.2
 	github.com/Workiva/go-datastructures v1.1.3
-	github.com/gin-contrib/sessions v0.0.5
+	github.com/gin-contrib/sessions v1.0.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/nicksnyder/go-i18n/v2 v2.4.0
@@ -48,7 +48,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.0 // indirect
 	github.com/pires/go-proxyproto v0.7.0 // indirect
-	github.com/sagernet/sing v0.3.6 // indirect
+	github.com/sagernet/sing v0.3.8 // indirect
 	github.com/tklauser/go-sysconf v0.3.13 // indirect
 	github.com/tklauser/numcpus v0.7.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
