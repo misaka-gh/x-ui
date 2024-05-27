@@ -48,7 +48,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/pires/go-proxyproto v0.7.0 // indirect
-	github.com/sagernet/sing v0.3.8 // indirect
+	github.com/sagernet/sing v0.4.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.14 // indirect
 	github.com/tklauser/numcpus v0.8.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
