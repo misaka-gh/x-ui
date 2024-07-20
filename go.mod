@@ -14,7 +14,7 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/shirou/gopsutil v3.21.11+incompatible
-	github.com/xtls/xray-core v1.8.19
+	github.com/xtls/xray-core v1.8.20
 	go.uber.org/atomic v1.11.0
 	golang.org/x/text v0.16.0
 	google.golang.org/grpc v1.65.0
